@@ -40,3 +40,12 @@ class DataBase:
 
             self.con.commit()
             self.con.close()
+
+    def change_data(self, name_tables, col):
+        self.con = sqlite3.connect(self.name_database)
+        self.cur = self.con.cursor()
+
+        self.cur.execute(f"UPDATE {name_tables} SET {col}")
+
+        self.con.commit()
+        self.con.close()

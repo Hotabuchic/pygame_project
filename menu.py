@@ -6,6 +6,7 @@ from databse import DataBase
 
 database = DataBase()
 count_coins = database.get_data("player_info", "count_coins")[0][0]
+level = database.get_data("player_info", "current_level")[0][0]
 
 
 class MainMenuView(arcade.View):
@@ -136,6 +137,39 @@ class SettingsView(arcade.View):
         text_level.set_style_attrs(font_color=arcade.color.BABY_BLUE, font_size=30)
         self.ui_manager.add_ui_element(text_level)
 
+        level_easy = UIFlatButton("Лёгкий",
+                                  center_x=200, center_y=SCREEN_HEIGHT - 325,
+                                  width=180, height=100)
+        level_easy.set_handler("on_click", self.easy)
+        self.ui_manager.add_ui_element(level_easy)
+
+        level_medium = UIFlatButton("Средний",
+                                    center_x=400, center_y=SCREEN_HEIGHT - 325,
+                                    width=180, height=100)
+        level_medium.set_handler("on_click", self.medium)
+        self.ui_manager.add_ui_element(level_medium)
+
+        level_hard = UIFlatButton("Сложный",
+                                  center_x=600, center_y=SCREEN_HEIGHT - 325,
+                                  width=180, height=100)
+        level_hard.set_handler("on_click", self.hard)
+        self.ui_manager.add_ui_element(level_hard)
+
+    def easy(self):
+        global level
+        database.change_data("player_info", "current_level = 'лёгкий'")
+        level = database.get_data("player_info", "current_level")[0][0]
+
+    def medium(self):
+        global level
+        database.change_data("player_info", "current_level = 'средний'")
+        level = database.get_data("player_info", "current_level")[0][0]
+
+    def hard(self):
+        global level
+        database.change_data("player_info", "current_level = 'сложный'")
+        level = database.get_data("player_info", "current_level")[0][0]
+
     def settings(self):
         self.ui_manager.purge_ui_elements()
         view = MainMenuView()
@@ -152,10 +186,5 @@ class SettingsView(arcade.View):
         self.coin.draw()
         arcade.draw_text(str(count_coins), SCREEN_WIDTH - 80, SCREEN_HEIGHT - 82, anchor_x="right",
                          color=arcade.color.WHITE, font_size=60, bold=True)
-        arcade.draw_lrtb_rectangle_filled(left=0,
-                                          right=SCREEN_WIDTH,
-                                          top=SCREEN_HEIGHT,
-                                          bottom=0,
-                                          color=arcade.color.BLACK + (200,))
-        arcade.draw_lrtb_rectangle_filled(left=100, right=SCREEN_WIDTH - 100,
-                                          top=SCREEN_HEIGHT - 175, bottom=75, color=arcade.color.BLACK)
+        arcade.draw_text(f"Сейчас выбран\n {level} уровень сложности", 150, 300,
+                         color=arcade.color.BABY_BLUE, font_size=34)
