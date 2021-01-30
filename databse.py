@@ -2,7 +2,7 @@ import sqlite3
 
 
 class DataBase:
-    def __init__(self, name_database="project.db"):
+    def __init__(self, name_database="database.db"):
         self.name_database = name_database
 
     def get_data(self, name_tables, name_data="*", criterion="", data_criterion=None):

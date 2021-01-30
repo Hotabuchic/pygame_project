@@ -6,8 +6,7 @@ from menu import MainMenuView
 class IntroductionView(arcade.View):
     def on_show(self):
         arcade.set_viewport(0, SCREEN_WIDTH - 1, 0, SCREEN_HEIGHT - 1)
-        self.background = arcade.Sprite("images/background2.jpg", SCALING_BACKGROUND,
-                                        center_x=SCREEN_WIDTH // 2, center_y=SCREEN_HEIGHT // 2)
+        self.background = BACKGROUND
 
     def on_draw(self):
         arcade.start_render()
