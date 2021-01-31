@@ -78,12 +78,15 @@ class MainMenuView(arcade.View):
         self.ui_manager.add_ui_element(btn_end)
 
         btn_settings = UIImageButton(center_x=35, center_y=SCREEN_HEIGHT - 35,
-                                     normal_texture=arcade.load_texture("images/settings2.png"))
+                                     normal_texture=arcade.load_texture(SETTINGS),
+                                     press_texture=arcade.load_texture(SETTINGS2))
         btn_settings.set_handler("on_click", self.settings)
         self.ui_manager.add_ui_element(btn_settings)
 
     def new_game(self):
-        pass
+        self.ui_manager.purge_ui_elements()
+        view = NewGameView()
+        self.window.show_view(view)
 
     def resume(self):
         pass
@@ -127,7 +130,8 @@ class SettingsView(arcade.View):
         self.ui_manager.add_ui_element(text)
 
         btn_settings = UIImageButton(center_x=35, center_y=SCREEN_HEIGHT - 35,
-                                     normal_texture=arcade.load_texture("images/settings2.png"))
+                                     normal_texture=arcade.load_texture(SETTINGS),
+                                     press_texture=arcade.load_texture(SETTINGS2))
         btn_settings.set_handler("on_click", self.settings)
         self.ui_manager.add_ui_element(btn_settings)
 
@@ -186,5 +190,80 @@ class SettingsView(arcade.View):
         self.coin.draw()
         arcade.draw_text(str(count_coins), SCREEN_WIDTH - 80, SCREEN_HEIGHT - 82, anchor_x="right",
                          color=arcade.color.WHITE, font_size=60, bold=True)
-        arcade.draw_text(f"Сейчас выбран\n {level} уровень сложности", 150, 300,
+        arcade.draw_text(f"Сейчас выбран\n{level} уровень сложности", 150, 300,
                          color=arcade.color.BABY_BLUE, font_size=34)
+
+
+class NewGameView(arcade.View):
+    def __init__(self):
+        super(NewGameView, self).__init__()
+        self.background = None
+        self.ui_manager = UIManager(self.window)
+        self.setup()
+
+    def setup(self):
+        self.ui_manager.purge_ui_elements()
+
+        text = UILabel("Вы точно хотите начать новую игру?",
+                       center_x=SCREEN_WIDTH // 2,
+                       center_y=SCREEN_HEIGHT - 100)
+        text.set_style_attrs(font_color=arcade.color.BABY_BLUE, font_size=34)
+        self.ui_manager.add_ui_element(text)
+
+        btn_ok = UIFlatButton("Да",
+                              center_x=225, center_y=SCREEN_HEIGHT // 2 - 75,
+                              width=225, height=100)
+        btn_ok.set_handler("on_click", self.ok)
+        btn_ok.set_style_attrs(
+            font_color=arcade.color.WHITE,
+            font_color_hover=arcade.color.WHITE,
+            font_color_press=arcade.color.WHITE,
+            bg_color=(51, 139, 57),
+            bg_color_hover=(51, 139, 57),
+            bg_color_press=(28, 71, 32),
+            border_color=(51, 139, 57),
+            border_color_hover=arcade.color.WHITE,
+            border_color_press=arcade.color.WHITE,
+            font_size=22
+        )
+        self.ui_manager.add_ui_element(btn_ok)
+
+        btn_cancel = UIFlatButton("Отмена",
+                                  center_x=575, center_y=SCREEN_HEIGHT // 2 - 75,
+                                  width=225, height=100)
+        btn_cancel.set_handler("on_click", self.cancel)
+        btn_cancel.set_style_attrs(
+            font_color=arcade.color.WHITE,
+            font_color_hover=arcade.color.WHITE,
+            font_color_press=arcade.color.WHITE,
+            bg_color=(135, 21, 25),
+            bg_color_hover=(135, 21, 25),
+            bg_color_press=(122, 21, 24),
+            border_color=(135, 21, 25),
+            border_color_hover=arcade.color.WHITE,
+            border_color_press=arcade.color.WHITE,
+            font_size=22
+        )
+        self.ui_manager.add_ui_element(btn_cancel)
+
+    def ok(self):
+        global count_coins
+        database.change_data("levels", "completed = 'False', all_coins = '+++'")
+        database.change_data("player_info", "count_coins = 0")
+        count_coins = database.get_data("player_info", "count_coins")[0][0]
+        self.cancel()
+
+    def cancel(self):
+        self.ui_manager.purge_ui_elements()
+        view = MainMenuView()
+        self.window.show_view(view)
+
+    def on_show(self):
+        arcade.set_viewport(0, SCREEN_WIDTH - 1, 0, SCREEN_HEIGHT - 1)
+        self.background = BACKGROUND
+
+    def on_draw(self):
+        arcade.start_render()
+        self.background.draw()
+        arcade.draw_text("Если вы начнёте новую игру,\nто потеряете весь текущий прогресс!",
+                         start_x=125, start_y=520, color=arcade.color.RED, font_size=30)
