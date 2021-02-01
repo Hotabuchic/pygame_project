@@ -4,9 +4,22 @@ from arcade.gui import UIManager, UILabel, UIFlatButton, UIImageButton
 from constants import *
 from databse import DataBase
 
+
+help_dict_for_stars = {"False": 0, "лёгкий": 1, "средний": 2, "сложный": 3}
+
+
+def think_stars(data):
+    count = 0
+    for i in data:
+        count += help_dict_for_stars[i[0]]
+    return count
+
+
 database = DataBase()
 count_coins = database.get_data("player_info", "count_coins")[0][0]
+count_stars = think_stars(database.get_data("levels", "completed"))
 level = database.get_data("player_info", "current_level")[0][0]
+all_levels = database.get_data("levels")
 
 
 class MainMenuView(arcade.View):
@@ -14,6 +27,7 @@ class MainMenuView(arcade.View):
         super(MainMenuView, self).__init__()
         self.background = None
         self.coin = None
+        self.star = None
         self.ui_manager = UIManager(self.window)
         self.setup()
 
@@ -89,7 +103,9 @@ class MainMenuView(arcade.View):
         self.window.show_view(view)
 
     def resume(self):
-        pass
+        self.ui_manager.purge_ui_elements()
+        view = LevelsMenuView()
+        self.window.show_view(view)
 
     def end(self):
         arcade.close_window()
@@ -103,12 +119,16 @@ class MainMenuView(arcade.View):
         arcade.set_viewport(0, SCREEN_WIDTH - 1, 0, SCREEN_HEIGHT - 1)
         self.background = BACKGROUND
         self.coin = COIN
+        self.star = STAR
 
     def on_draw(self):
         arcade.start_render()
         self.background.draw()
         self.coin.draw()
+        self.star.draw()
         arcade.draw_text(str(count_coins), SCREEN_WIDTH - 80, SCREEN_HEIGHT - 82, anchor_x="right",
+                         color=arcade.color.WHITE, font_size=60, bold=True)
+        arcade.draw_text(str(count_stars), SCREEN_WIDTH - 80, SCREEN_HEIGHT - 165, anchor_x="right",
                          color=arcade.color.WHITE, font_size=60, bold=True)
 
 
@@ -117,6 +137,7 @@ class SettingsView(arcade.View):
         super(SettingsView, self).__init__()
         self.background = None
         self.coin = None
+        self.star = None
         self.ui_manager = UIManager(self.window)
         self.setup()
 
@@ -183,12 +204,16 @@ class SettingsView(arcade.View):
         arcade.set_viewport(0, SCREEN_WIDTH - 1, 0, SCREEN_HEIGHT - 1)
         self.background = BACKGROUND
         self.coin = COIN
+        self.star = STAR
 
     def on_draw(self):
         arcade.start_render()
         self.background.draw()
         self.coin.draw()
+        self.star.draw()
         arcade.draw_text(str(count_coins), SCREEN_WIDTH - 80, SCREEN_HEIGHT - 82, anchor_x="right",
+                         color=arcade.color.WHITE, font_size=60, bold=True)
+        arcade.draw_text(str(count_stars), SCREEN_WIDTH - 80, SCREEN_HEIGHT - 165, anchor_x="right",
                          color=arcade.color.WHITE, font_size=60, bold=True)
         arcade.draw_text(f"Сейчас выбран\n{level} уровень сложности", 150, 300,
                          color=arcade.color.BABY_BLUE, font_size=34)
@@ -267,3 +292,30 @@ class NewGameView(arcade.View):
         self.background.draw()
         arcade.draw_text("Если вы начнёте новую игру,\nто потеряете весь текущий прогресс!",
                          start_x=125, start_y=520, color=arcade.color.RED, font_size=30)
+
+
+class LevelsMenuView(arcade.View):
+    def __init__(self):
+        super(LevelsMenuView, self).__init__()
+        self.background = None
+        self.coin = None
+        self.star = None
+        self.ui_manager = UIManager(self.window)
+        self.setup()
+
+    def setup(self):
+        pass
+
+    def on_show(self):
+        arcade.set_viewport(0, SCREEN_WIDTH - 1, 0, SCREEN_HEIGHT - 1)
+        self.background = BACKGROUND2
+        self.coin = COIN
+        self.star = STAR
+        arcade.start_render()
+        self.background.draw()
+        self.coin.draw()
+        self.star.draw()
+        arcade.draw_text(str(count_coins), SCREEN_WIDTH - 80, SCREEN_HEIGHT - 82, anchor_x="right",
+                         color=arcade.color.WHITE, font_size=60, bold=True)
+        arcade.draw_text(str(count_stars), SCREEN_WIDTH - 80, SCREEN_HEIGHT - 165, anchor_x="right",
+                         color=arcade.color.WHITE, font_size=60, bold=True)
