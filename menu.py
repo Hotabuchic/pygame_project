@@ -4,7 +4,6 @@ from arcade.gui import UIManager, UILabel, UIFlatButton, UIImageButton
 from constants import *
 from databse import DataBase
 
-
 help_dict_for_stars = {"False": 0, "лёгкий": 1, "средний": 2, "сложный": 3}
 
 
@@ -311,6 +310,8 @@ class LevelsMenuView(arcade.View):
         self.background = BACKGROUND2
         self.coin = COIN
         self.star = STAR
+
+    def on_draw(self):
         arcade.start_render()
         self.background.draw()
         self.coin.draw()
