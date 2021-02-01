@@ -4,6 +4,16 @@ from menu import MainMenuView
 
 
 class IntroductionView(arcade.View):
+    def __init__(self):
+        super(IntroductionView, self).__init__()
+        self.window.set_mouse_visible(False)
+        self.background = None
+        self.cursor = arcade.Sprite("images/cursor.png", SCALING_CURSOR)
+
+    def on_mouse_motion(self, x: float, y: float, dx: float, dy: float):
+        self.cursor.center_x = x
+        self.cursor.center_y = y
+
     def on_show(self):
         arcade.set_viewport(0, SCREEN_WIDTH - 1, 0, SCREEN_HEIGHT - 1)
         self.background = BACKGROUND
@@ -15,6 +25,7 @@ class IntroductionView(arcade.View):
                          SCREEN_HEIGHT // 2, arcade.color.WHITE_SMOKE, anchor_x="center", font_size=50)
         arcade.draw_text("Нажмите любую кнопку чтобы продолжить", SCREEN_WIDTH // 2,
                          SCREEN_HEIGHT // 2 - 80, arcade.color.RED, anchor_x="center", font_size=20)
+        self.cursor.draw()
 
     def on_key_press(self, symbol: int, modifiers: int):
         view = MainMenuView()

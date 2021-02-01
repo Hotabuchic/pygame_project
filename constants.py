@@ -15,3 +15,8 @@ SETTINGS = "images/settings.png"
 SETTINGS2 = "images/settings2.png"
 STAR = Sprite(":resources:images/items/star.png", scale=1.05, center_x=SCREEN_WIDTH - 40,
               center_y=SCREEN_HEIGHT - 120)
+DOOR = "images/door.png"
+DOOR2 = "images/door2.png"
+ARROW = "images/arrow.png"
+ARROW2 = "images/arrow2.png"
+SCALING_CURSOR = 0.11

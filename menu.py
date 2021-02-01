@@ -29,6 +29,11 @@ class MainMenuView(arcade.View):
         self.star = None
         self.ui_manager = UIManager(self.window)
         self.setup()
+        self.cursor = arcade.Sprite("images/cursor.png", SCALING_CURSOR)
+
+    def on_mouse_motion(self, x: float, y: float, dx: float, dy: float):
+        self.cursor.center_x = x
+        self.cursor.center_y = y
 
     def setup(self):
         self.ui_manager.purge_ui_elements()
@@ -129,6 +134,7 @@ class MainMenuView(arcade.View):
                          color=arcade.color.WHITE, font_size=60, bold=True)
         arcade.draw_text(str(count_stars), SCREEN_WIDTH - 80, SCREEN_HEIGHT - 165, anchor_x="right",
                          color=arcade.color.WHITE, font_size=60, bold=True)
+        self.cursor.draw()
 
 
 class SettingsView(arcade.View):
@@ -139,6 +145,11 @@ class SettingsView(arcade.View):
         self.star = None
         self.ui_manager = UIManager(self.window)
         self.setup()
+        self.cursor = arcade.Sprite("images/cursor.png", SCALING_CURSOR)
+
+    def on_mouse_motion(self, x: float, y: float, dx: float, dy: float):
+        self.cursor.center_x = x
+        self.cursor.center_y = y
 
     def setup(self):
         self.ui_manager.purge_ui_elements()
@@ -216,6 +227,7 @@ class SettingsView(arcade.View):
                          color=arcade.color.WHITE, font_size=60, bold=True)
         arcade.draw_text(f"Сейчас выбран\n{level} уровень сложности", 150, 300,
                          color=arcade.color.BABY_BLUE, font_size=34)
+        self.cursor.draw()
 
 
 class NewGameView(arcade.View):
@@ -224,6 +236,11 @@ class NewGameView(arcade.View):
         self.background = None
         self.ui_manager = UIManager(self.window)
         self.setup()
+        self.cursor = arcade.Sprite("images/cursor.png", SCALING_CURSOR)
+
+    def on_mouse_motion(self, x: float, y: float, dx: float, dy: float):
+        self.cursor.center_x = x
+        self.cursor.center_y = y
 
     def setup(self):
         self.ui_manager.purge_ui_elements()
@@ -291,6 +308,7 @@ class NewGameView(arcade.View):
         self.background.draw()
         arcade.draw_text("Если вы начнёте новую игру,\nто потеряете весь текущий прогресс!",
                          start_x=125, start_y=520, color=arcade.color.RED, font_size=30)
+        self.cursor.draw()
 
 
 class LevelsMenuView(arcade.View):
@@ -299,11 +317,57 @@ class LevelsMenuView(arcade.View):
         self.background = None
         self.coin = None
         self.star = None
+        self.first_star, self.second_star, self.third_star = None, None, None
+        self.num_level = 0
         self.ui_manager = UIManager(self.window)
+        self.set_star()
         self.setup()
+        self.cursor = arcade.Sprite("images/cursor.png", SCALING_CURSOR)
+
+    def on_mouse_motion(self, x: float, y: float, dx: float, dy: float):
+        self.cursor.center_x = x
+        self.cursor.center_y = y
 
     def setup(self):
+        self.ui_manager.purge_ui_elements()
+
+        btn_exit = UIImageButton(center_x=40, center_y=SCREEN_HEIGHT - 50,
+                                 normal_texture=arcade.load_texture(DOOR),
+                                 press_texture=arcade.load_texture(DOOR2))
+        btn_exit.set_handler("on_click", self.exit)
+        self.ui_manager.add_ui_element(btn_exit)
+
+        btn_left = UIImageButton(center_x=50, center_y=SCREEN_HEIGHT // 2,
+                                 normal_texture=arcade.load_texture(ARROW, flipped_horizontally=True),
+                                 press_texture=arcade.load_texture(ARROW2, flipped_horizontally=True))
+        btn_left.set_handler("on_click", self.left)
+        self.ui_manager.add_ui_element(btn_left)
+
+        btn_right = UIImageButton(center_x=SCREEN_WIDTH - 50, center_y=SCREEN_HEIGHT // 2,
+                                  normal_texture=arcade.load_texture(ARROW),
+                                  press_texture=arcade.load_texture(ARROW2))
+        btn_right.set_handler("on_click", self.right)
+        self.ui_manager.add_ui_element(btn_right)
+
+    def set_star(self):
         pass
+
+    def exit(self):
+        self.ui_manager.purge_ui_elements()
+        view = MainMenuView()
+        self.window.show_view(view)
+
+    def left(self):
+        if self.num_level == 0:
+            self.num_level = len(all_levels) - 1
+        else:
+            self.num_level -= 1
+
+    def right(self):
+        if self.num_level == len(all_levels) - 1:
+            self.num_level = 0
+        else:
+            self.num_level += 1
 
     def on_show(self):
         arcade.set_viewport(0, SCREEN_WIDTH - 1, 0, SCREEN_HEIGHT - 1)
@@ -320,3 +384,6 @@ class LevelsMenuView(arcade.View):
                          color=arcade.color.WHITE, font_size=60, bold=True)
         arcade.draw_text(str(count_stars), SCREEN_WIDTH - 80, SCREEN_HEIGHT - 165, anchor_x="right",
                          color=arcade.color.WHITE, font_size=60, bold=True)
+        arcade.draw_text(all_levels[self.num_level][1], start_x=SCREEN_WIDTH // 2, start_y=SCREEN_HEIGHT - 200,
+                         anchor_x="center", color=arcade.color.ORANGE, font_size=44, font_name="")
+        self.cursor.draw()
