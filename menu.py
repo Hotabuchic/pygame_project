@@ -29,7 +29,7 @@ class MainMenuView(arcade.View):
         self.star = None
         self.ui_manager = UIManager(self.window)
         self.setup()
-        self.cursor = arcade.Sprite("images/cursor.png", SCALING_CURSOR)
+        self.cursor = CURSOR
 
     def on_mouse_motion(self, x: float, y: float, dx: float, dy: float):
         self.cursor.center_x = x
@@ -145,7 +145,7 @@ class SettingsView(arcade.View):
         self.star = None
         self.ui_manager = UIManager(self.window)
         self.setup()
-        self.cursor = arcade.Sprite("images/cursor.png", SCALING_CURSOR)
+        self.cursor = CURSOR
 
     def on_mouse_motion(self, x: float, y: float, dx: float, dy: float):
         self.cursor.center_x = x
@@ -236,7 +236,7 @@ class NewGameView(arcade.View):
         self.background = None
         self.ui_manager = UIManager(self.window)
         self.setup()
-        self.cursor = arcade.Sprite("images/cursor.png", SCALING_CURSOR)
+        self.cursor = CURSOR
 
     def on_mouse_motion(self, x: float, y: float, dx: float, dy: float):
         self.cursor.center_x = x
@@ -322,7 +322,7 @@ class LevelsMenuView(arcade.View):
         self.ui_manager = UIManager(self.window)
         self.set_star()
         self.setup()
-        self.cursor = arcade.Sprite("images/cursor.png", SCALING_CURSOR)
+        self.cursor = CURSOR
 
     def on_mouse_motion(self, x: float, y: float, dx: float, dy: float):
         self.cursor.center_x = x
@@ -349,8 +349,48 @@ class LevelsMenuView(arcade.View):
         btn_right.set_handler("on_click", self.right)
         self.ui_manager.add_ui_element(btn_right)
 
+        btn_play = UIFlatButton("Играть", center_x=SCREEN_WIDTH // 2, center_y=SCREEN_HEIGHT // 2,
+                                height=120, width=280)
+        btn_play.set_handler("on_click", self.play)
+        btn_play.set_style_attrs(
+            font_color=arcade.color.WHITE,
+            font_color_hover=arcade.color.WHITE,
+            font_color_press=arcade.color.WHITE,
+            bg_color=(51, 139, 57),
+            bg_color_hover=(51, 139, 57),
+            bg_color_press=(28, 71, 32),
+            border_color=(51, 139, 57),
+            border_color_hover=arcade.color.WHITE,
+            border_color_press=arcade.color.WHITE,
+            font_size=34
+        )
+        self.ui_manager.add_ui_element(btn_play)
+
     def set_star(self):
-        pass
+        completed = all_levels[self.num_level][3]
+        self.first_star = arcade.Sprite(STAR2_IMAGE, center_x=300, center_y=230)
+        self.second_star = arcade.Sprite(STAR2_IMAGE, center_x=400, center_y=230)
+        self.third_star = arcade.Sprite(STAR2_IMAGE, center_x=500, center_y=230)
+        if completed == "лёгкий":
+            self.first_star = arcade.Sprite(STAR_IMAGE, SCALING_STAR,
+                                            center_x=300, center_y=230)
+        elif completed == "средний":
+            self.first_star = arcade.Sprite(STAR_IMAGE, SCALING_STAR,
+                                            center_x=300, center_y=230)
+            self.second_star = arcade.Sprite(STAR_IMAGE, SCALING_STAR,
+                                             center_x=400, center_y=230)
+        elif completed == "сложный":
+            self.first_star = arcade.Sprite(STAR_IMAGE, SCALING_STAR,
+                                            center_x=300, center_y=230)
+            self.second_star = arcade.Sprite(STAR_IMAGE, SCALING_STAR,
+                                             center_x=400, center_y=230)
+            self.third_star = arcade.Sprite(STAR_IMAGE, SCALING_STAR,
+                                            center_x=500, center_y=230)
+
+    def play(self):
+        self.ui_manager.purge_ui_elements()
+        view = GameView(all_levels[self.num_level])
+        self.window.show_view(view)
 
     def exit(self):
         self.ui_manager.purge_ui_elements()
@@ -362,12 +402,14 @@ class LevelsMenuView(arcade.View):
             self.num_level = len(all_levels) - 1
         else:
             self.num_level -= 1
+        self.set_star()
 
     def right(self):
         if self.num_level == len(all_levels) - 1:
             self.num_level = 0
         else:
             self.num_level += 1
+        self.set_star()
 
     def on_show(self):
         arcade.set_viewport(0, SCREEN_WIDTH - 1, 0, SCREEN_HEIGHT - 1)
@@ -380,10 +422,29 @@ class LevelsMenuView(arcade.View):
         self.background.draw()
         self.coin.draw()
         self.star.draw()
+        self.first_star.draw()
+        self.second_star.draw()
+        self.third_star.draw()
         arcade.draw_text(str(count_coins), SCREEN_WIDTH - 80, SCREEN_HEIGHT - 82, anchor_x="right",
                          color=arcade.color.WHITE, font_size=60, bold=True)
         arcade.draw_text(str(count_stars), SCREEN_WIDTH - 80, SCREEN_HEIGHT - 165, anchor_x="right",
                          color=arcade.color.WHITE, font_size=60, bold=True)
-        arcade.draw_text(all_levels[self.num_level][1], start_x=SCREEN_WIDTH // 2, start_y=SCREEN_HEIGHT - 200,
+        arcade.draw_text(all_levels[self.num_level][1], start_x=SCREEN_WIDTH // 2, start_y=SCREEN_HEIGHT - 250,
                          anchor_x="center", color=arcade.color.ORANGE, font_size=44, font_name="")
         self.cursor.draw()
+
+
+class GameView(arcade.View):
+    def __init__(self, data_level):
+        super(GameView, self).__init__()
+        self.data_level = data_level
+        self.setup()
+
+    def setup(self):
+        pass
+
+    def on_show(self):
+        arcade.set_viewport(0, SCREEN_WIDTH - 1, 0, SCREEN_HEIGHT - 1)
+
+    def on_draw(self):
+        arcade.start_render()

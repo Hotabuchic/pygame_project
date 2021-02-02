@@ -8,7 +8,7 @@ class IntroductionView(arcade.View):
         super(IntroductionView, self).__init__()
         self.window.set_mouse_visible(False)
         self.background = None
-        self.cursor = arcade.Sprite("images/cursor.png", SCALING_CURSOR)
+        self.cursor = CURSOR
 
     def on_mouse_motion(self, x: float, y: float, dx: float, dy: float):
         self.cursor.center_x = x
