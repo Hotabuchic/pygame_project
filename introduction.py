@@ -9,6 +9,8 @@ class IntroductionView(arcade.View):
         self.window.set_mouse_visible(False)
         self.background = None
         self.cursor = CURSOR
+        self.start_load = START_LOAD_SOUND
+        self.start_load.play(1.5)
 
     def on_mouse_motion(self, x: float, y: float, dx: float, dy: float):
         self.cursor.center_x = x
