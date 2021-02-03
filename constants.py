@@ -27,7 +27,7 @@ ARROW2 = "images/arrow2.png"
 CURSOR = Sprite("images/cursor.png", 0.11)
 STAR2_IMAGE = "images/star.png"
 SCALING_STAR = 1.3
-TILE_WIDTH = TILE_HEIGHT = 50
+TILE_SIZE = 50
 BUTTON_SOUND = Sound("sound/button_press.wav")
 SETTINGS_SOUND = Sound(":resources:sounds/rockHit2.wav")
 BUTTON_SOUND_2 = Sound("sound/button_press_2.wav")

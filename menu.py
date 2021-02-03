@@ -1,9 +1,10 @@
+from time import sleep
+
 import arcade
 from arcade.gui import UIManager, UILabel, UIFlatButton, UIImageButton
 
 from constants import *
 from databse import DataBase
-from time import sleep
 
 help_dict_for_stars = {"False": 0, "лёгкий": 1, "средний": 2, "сложный": 3}
 
@@ -526,6 +527,21 @@ class GameView(arcade.View):
 
     def setup(self):
         self.play_song()
+        print(len(self.level))
+        for y, string in enumerate(self.level):
+            for x, column in enumerate(string):
+                if column in ".@123":
+                    floor = arcade.Sprite(f"images/{self.floor_image}",
+                                          center_x=x * TILE_SIZE + TILE_SIZE // 2,
+                                          center_y=(len(self.level) - y - 1) * TILE_SIZE + TILE_SIZE // 2)
+                    self.floors.append(floor)
+                    self.all_sprites.append(floor)
+                elif column == "#":
+                    wall = arcade.Sprite(f"images/{self.wall_image}",
+                                         center_x=x * TILE_SIZE + TILE_SIZE // 2,
+                                         center_y=(len(self.level) - y - 1) * TILE_SIZE + TILE_SIZE // 2)
+                    self.walls.append(wall)
+                    self.all_sprites.append(wall)
 
     def on_key_press(self, symbol: int, modifiers: int):
         if symbol == arcade.key.ESCAPE:
@@ -541,11 +557,14 @@ class GameView(arcade.View):
         if position == 0.0:
             self.play_song()
 
+    def off_music(self):
+        self.music.set_volume(0, self.current_player)
+        self.music.stop(self.current_player)
+        self.current_player.pause()
+        self.current_player.delete()
+
     def on_show(self):
         arcade.set_viewport(0, SCREEN_WIDTH - 1, 0, SCREEN_HEIGHT - 1)
-        #################################
-        self.all_sprites.append(STAR)
-        # for test code
 
     def on_draw(self):
         arcade.start_render()
@@ -593,9 +612,10 @@ class PauseView(arcade.View):
         if symbol == arcade.key.ESCAPE:
             self.window.show_view(self.game_view)
         elif symbol == arcade.key.R:
+            self.game_view.off_music()
             view = GameView(self.data_level)
             self.window.show_view(view)
         elif symbol == arcade.key.ENTER:
-            self.game_view.music.stop(self.game_view.current_player)
+            self.game_view.off_music()
             view = LevelsMenuView()
             self.window.show_view(view)
