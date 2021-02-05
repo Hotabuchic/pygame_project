@@ -527,7 +527,7 @@ class GameView(arcade.View):
 
     def setup(self):
         self.play_song()
-        print(len(self.level))
+
         for y, string in enumerate(self.level):
             for x, column in enumerate(string):
                 if column in ".@123":
