@@ -5,6 +5,7 @@ from arcade.gui import UIManager, UILabel, UIFlatButton, UIImageButton
 
 from constants import *
 from databse import DataBase
+from sprites import Coin
 
 help_dict_for_stars = {"False": 0, "лёгкий": 1, "средний": 2, "сложный": 3}
 
@@ -16,8 +17,15 @@ def think_stars(data):
     return count
 
 
+def think_coins(data):
+    count = 0
+    for i in data:
+        count += i[0].count("-")
+    return count
+
+
 database = DataBase()
-count_coins = database.get_data("player_info", "count_coins")[0][0]
+count_coins = think_coins(database.get_data("levels", "all_coins"))
 count_stars = think_stars(database.get_data("levels", "completed"))
 level = database.get_data("player_info", "current_level")[0][0]
 all_levels = database.get_data("levels")
@@ -515,27 +523,56 @@ class GameView(arcade.View):
         super(GameView, self).__init__()
         self.data_level = data_level
         self.level = load_level(data_level[2])
+        self.level_coins = data_level[4]
         self.wall_image = data_level[5]
         self.floor_image = data_level[6]
         self.all_sprites = arcade.SpriteList()
+        self.hearts = arcade.SpriteList()
         self.coins = arcade.SpriteList()
         self.floors = arcade.SpriteList()
         self.walls = arcade.SpriteList()
         self.player = None
         self.music = BACKGROUND_SOUND
+        self.count_coin = 0
         self.setup()
 
     def setup(self):
         self.play_song()
 
         for y, string in enumerate(self.level):
+            for i in range(1, 4):
+                heart = arcade.Sprite(HEART_IMAGE,
+                                      center_x=SCREEN_WIDTH - i * 40,
+                                      center_y=SCREEN_HEIGHT - 25)
+                self.hearts.append(heart)
+                self.all_sprites.append(heart)
             for x, column in enumerate(string):
-                if column in ".@123":
+                if column in ".@123OE":
                     floor = arcade.Sprite(f"images/{self.floor_image}",
                                           center_x=x * TILE_SIZE + TILE_SIZE // 2,
                                           center_y=(len(self.level) - y - 1) * TILE_SIZE + TILE_SIZE // 2)
                     self.floors.append(floor)
                     self.all_sprites.append(floor)
+                    if column == "E":
+                        exitt = arcade.Sprite(EXIT_IMAGE,
+                                              center_x=x * TILE_SIZE + TILE_SIZE // 2,
+                                              center_y=(len(self.level) - y - 1) * TILE_SIZE + TILE_SIZE // 3,
+                                              scale=0.35)
+                        self.all_sprites.append(exitt)
+                    elif column in "123":
+                        if self.level_coins[int(column) - 1] == "+":
+                            textures = [arcade.load_texture(COIN_IMAGE),
+                                        arcade.load_texture(COIN_IMAGE_2),
+                                        arcade.load_texture(COIN_IMAGE_3),
+                                        arcade.load_texture(COIN_IMAGE_4),
+                                        arcade.load_texture(COIN_IMAGE_3, mirrored=True),
+                                        arcade.load_texture(COIN_IMAGE_2, mirrored=True)]
+                            coin = Coin(textures)
+                            coin.center_x = x * TILE_SIZE + TILE_SIZE // 2
+                            coin.center_y = (len(self.level) - y - 1) * TILE_SIZE + TILE_SIZE // 2
+                            coin.scale = 0.7
+                            self.coins.append(coin)
+                            self.all_sprites.append(coin)
                 elif column == "#":
                     wall = arcade.Sprite(f"images/{self.wall_image}",
                                          center_x=x * TILE_SIZE + TILE_SIZE // 2,
@@ -553,13 +590,12 @@ class GameView(arcade.View):
         sleep(0.03)
 
     def on_update(self, delta_time: float):
+        self.coins.update()
         position = self.music.get_stream_position(self.current_player)
         if position == 0.0:
             self.play_song()
 
     def off_music(self):
-        self.music.set_volume(0, self.current_player)
-        self.music.stop(self.current_player)
         self.current_player.pause()
         self.current_player.delete()
 
@@ -569,6 +605,9 @@ class GameView(arcade.View):
     def on_draw(self):
         arcade.start_render()
         self.all_sprites.draw()
+        arcade.draw_text(f"Монет собрано: {self.count_coin}",
+                         start_x=25, start_y=SCREEN_HEIGHT - 40,
+                         color=arcade.color.ORANGE, font_size=24)
 
 
 class PauseView(arcade.View):
@@ -584,6 +623,9 @@ class PauseView(arcade.View):
         arcade.start_render()
 
         self.game_view.all_sprites.draw()
+        arcade.draw_text(f"Монет собрано: {self.game_view.count_coin}",
+                         start_x=25, start_y=SCREEN_HEIGHT - 40,
+                         color=arcade.color.ORANGE, font_size=24)
 
         arcade.draw_lrtb_rectangle_filled(0, SCREEN_WIDTH, SCREEN_HEIGHT, 0,
                                           arcade.color.BABY_BLUE + (175,))

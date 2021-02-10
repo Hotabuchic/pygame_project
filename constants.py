@@ -35,5 +35,7 @@ START_LOAD_SOUND = Sound("sound/start.mp3")
 PLAY_SOUND = Sound("sound/play.wav")
 EXIT_SOUND = Sound(":resources:sounds/lose5.wav")
 GAMEOVER_SOUND = Sound(":resources:sounds/gameover1.wav")
-BACKGROUND_SOUND = Sound(":resources:music/funkyrobot.mp3", streaming=True)
+BACKGROUND_SOUND = Sound(":resources:music/funkyrobot.mp3")
 MUSIC_VOLUME = 0.5
+HEART_IMAGE = "images/heart.png"
+EXIT_IMAGE = ":resources:images/tiles/signExit.png"
