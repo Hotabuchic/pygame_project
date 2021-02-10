@@ -538,6 +538,7 @@ class GameView(arcade.View):
         self.player = None
         self.music = BACKGROUND_SOUND
         self.count_coin = 0
+        self.hit = 0
         self.setup()
 
     def setup(self):
@@ -636,6 +637,9 @@ class GameView(arcade.View):
         self.coins.update()
         self.enemies.update()
         self.player.update()
+        for coin in self.player.collides_with_list(self.coins):
+            self.count_coin += 1
+            coin.kill()
         for enemy in self.enemies:
             if enemy.collides_with_list(self.walls) or enemy.left < 0 or enemy.right > SCREEN_HEIGHT:
                 mirrored, center_x, center_y, speed = enemy.data()

@@ -3,7 +3,7 @@ import arcade
 
 class Coin(arcade.Sprite):
     def __init__(self, texture_list):
-        super(Coin, self).__init__()
+        super(Coin, self).__init__(hit_box_algorithm="Detailed")
         self.textures = texture_list
         self.texture_index = 0
         self.set_texture(self.texture_index)
@@ -21,7 +21,7 @@ class Coin(arcade.Sprite):
 
 class Enemy(arcade.Sprite):
     def __init__(self, texture_list, mirrored, speed):
-        super(Enemy, self).__init__()
+        super(Enemy, self).__init__(hit_box_algorithm="Detailed")
         self.mirrored = mirrored
         self.textures = texture_list
         self.texture_index = 0
@@ -45,7 +45,7 @@ class Enemy(arcade.Sprite):
 
 class Player(arcade.Sprite):
     def __init__(self, path_to_textures):
-        super(Player, self).__init__()
+        super(Player, self).__init__(hit_box_algorithm="Detailed")
         self.path_to_textures = ":resources:images/animated_characters/" + path_to_textures
         self.textures = [arcade.load_texture(f"{self.path_to_textures}_idle.png"),
                          arcade.load_texture(f"{self.path_to_textures}_walk5.png"),
