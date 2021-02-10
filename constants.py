@@ -39,3 +39,4 @@ BACKGROUND_SOUND = Sound(":resources:music/funkyrobot.mp3")
 MUSIC_VOLUME = 0.5
 HEART_IMAGE = "images/heart.png"
 EXIT_IMAGE = ":resources:images/tiles/signExit.png"
+ENEMY_IMAGE = ":resources:images/animated_characters/zombie/zombie_walk"

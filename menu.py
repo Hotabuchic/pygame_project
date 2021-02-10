@@ -5,7 +5,7 @@ from arcade.gui import UIManager, UILabel, UIFlatButton, UIImageButton
 
 from constants import *
 from databse import DataBase
-from sprites import Coin
+from sprites import Coin, Enemy, Player
 
 help_dict_for_stars = {"False": 0, "лёгкий": 1, "средний": 2, "сложный": 3}
 
@@ -29,6 +29,9 @@ count_coins = think_coins(database.get_data("levels", "all_coins"))
 count_stars = think_stars(database.get_data("levels", "completed"))
 level = database.get_data("player_info", "current_level")[0][0]
 all_levels = database.get_data("levels")
+player = database.get_data("player_info, persons",
+                           "persons.path",
+                           "player_info.person_id = persons.id")[0][0]
 
 
 class MainMenuView(arcade.View):
@@ -531,6 +534,7 @@ class GameView(arcade.View):
         self.coins = arcade.SpriteList()
         self.floors = arcade.SpriteList()
         self.walls = arcade.SpriteList()
+        self.enemies = arcade.SpriteList()
         self.player = None
         self.music = BACKGROUND_SOUND
         self.count_coin = 0
@@ -539,13 +543,14 @@ class GameView(arcade.View):
     def setup(self):
         self.play_song()
 
+        for i in range(1, 4):
+            heart = arcade.Sprite(HEART_IMAGE,
+                                  center_x=SCREEN_WIDTH - i * 40,
+                                  center_y=SCREEN_HEIGHT - 25)
+            self.hearts.append(heart)
+            self.all_sprites.append(heart)
+
         for y, string in enumerate(self.level):
-            for i in range(1, 4):
-                heart = arcade.Sprite(HEART_IMAGE,
-                                      center_x=SCREEN_WIDTH - i * 40,
-                                      center_y=SCREEN_HEIGHT - 25)
-                self.hearts.append(heart)
-                self.all_sprites.append(heart)
             for x, column in enumerate(string):
                 if column in ".@123OE":
                     floor = arcade.Sprite(f"images/{self.floor_image}",
@@ -553,26 +558,6 @@ class GameView(arcade.View):
                                           center_y=(len(self.level) - y - 1) * TILE_SIZE + TILE_SIZE // 2)
                     self.floors.append(floor)
                     self.all_sprites.append(floor)
-                    if column == "E":
-                        exitt = arcade.Sprite(EXIT_IMAGE,
-                                              center_x=x * TILE_SIZE + TILE_SIZE // 2,
-                                              center_y=(len(self.level) - y - 1) * TILE_SIZE + TILE_SIZE // 3,
-                                              scale=0.35)
-                        self.all_sprites.append(exitt)
-                    elif column in "123":
-                        if self.level_coins[int(column) - 1] == "+":
-                            textures = [arcade.load_texture(COIN_IMAGE),
-                                        arcade.load_texture(COIN_IMAGE_2),
-                                        arcade.load_texture(COIN_IMAGE_3),
-                                        arcade.load_texture(COIN_IMAGE_4),
-                                        arcade.load_texture(COIN_IMAGE_3, mirrored=True),
-                                        arcade.load_texture(COIN_IMAGE_2, mirrored=True)]
-                            coin = Coin(textures)
-                            coin.center_x = x * TILE_SIZE + TILE_SIZE // 2
-                            coin.center_y = (len(self.level) - y - 1) * TILE_SIZE + TILE_SIZE // 2
-                            coin.scale = 0.7
-                            self.coins.append(coin)
-                            self.all_sprites.append(coin)
                 elif column == "#":
                     wall = arcade.Sprite(f"images/{self.wall_image}",
                                          center_x=x * TILE_SIZE + TILE_SIZE // 2,
@@ -580,10 +565,68 @@ class GameView(arcade.View):
                     self.walls.append(wall)
                     self.all_sprites.append(wall)
 
+        for y, string in enumerate(self.level):
+            for x, column in enumerate(string):
+                if column == "E":
+                    exitt = arcade.Sprite(EXIT_IMAGE,
+                                          center_x=x * TILE_SIZE + TILE_SIZE // 2,
+                                          center_y=(len(self.level) - y - 1) * TILE_SIZE + TILE_SIZE // 3,
+                                          scale=0.35)
+                    self.all_sprites.append(exitt)
+                elif column in "123":
+                    if self.level_coins[int(column) - 1] == "+":
+                        textures = [arcade.load_texture(COIN_IMAGE),
+                                    arcade.load_texture(COIN_IMAGE_2),
+                                    arcade.load_texture(COIN_IMAGE_3),
+                                    arcade.load_texture(COIN_IMAGE_4),
+                                    arcade.load_texture(COIN_IMAGE_3, mirrored=True),
+                                    arcade.load_texture(COIN_IMAGE_2, mirrored=True)]
+                        coin = Coin(textures)
+                        coin.center_x = x * TILE_SIZE + TILE_SIZE // 2
+                        coin.center_y = (len(self.level) - y - 1) * TILE_SIZE + TILE_SIZE // 2
+                        coin.scale = 0.7
+                        self.coins.append(coin)
+                        self.all_sprites.append(coin)
+                elif column == "O":
+                    textures = [arcade.load_texture(f"{ENEMY_IMAGE}{i}.png",
+                                                    mirrored=True) for i in range(8)]
+                    enemy = Enemy(textures, True, -5)
+                    enemy.center_x = x * TILE_SIZE + TILE_SIZE // 2
+                    enemy.center_y = (len(self.level) - y - 1) * TILE_SIZE + TILE_SIZE // 2 + 5
+                    enemy.scale = 0.45
+                    self.enemies.append(enemy)
+                    self.all_sprites.append(enemy)
+                elif column == "@":
+                    self.player = Player(path_to_textures=player)
+                    self.player.center_x = x * TILE_SIZE + TILE_SIZE // 2
+                    self.player.center_y = (len(self.level) - y - 1) * TILE_SIZE + TILE_SIZE // 2 + 5
+                    self.player.scale = 0.45
+                    self.all_sprites.append(self.player)
+
     def on_key_press(self, symbol: int, modifiers: int):
         if symbol == arcade.key.ESCAPE:
             view = PauseView(self, self.data_level)
             self.window.show_view(view)
+        if symbol == arcade.key.LEFT:
+            self.player.center_x -= 50
+            if self.player.collides_with_list(self.walls) or self.player.left <= 0:
+                self.player.center_x += 50
+            self.player.index(2)
+        if symbol == arcade.key.RIGHT:
+            self.player.center_x += 50
+            if self.player.collides_with_list(self.walls) or self.player.right >= SCREEN_WIDTH:
+                self.player.center_x -= 50
+            self.player.index(1)
+        if symbol == arcade.key.UP:
+            self.player.center_y += 50
+            if self.player.collides_with_list(self.walls) or self.player.top >= SCREEN_HEIGHT - 50:
+                self.player.center_y -= 50
+            self.player.index(0)
+        if symbol == arcade.key.DOWN:
+            self.player.center_y -= 50
+            if self.player.collides_with_list(self.walls) or self.player.bottom <= 0:
+                self.player.center_y += 50
+            self.player.index(0)
 
     def play_song(self):
         self.current_player = self.music.play(MUSIC_VOLUME)
@@ -591,6 +634,24 @@ class GameView(arcade.View):
 
     def on_update(self, delta_time: float):
         self.coins.update()
+        self.enemies.update()
+        self.player.update()
+        for enemy in self.enemies:
+            if enemy.collides_with_list(self.walls) or enemy.left < 0 or enemy.right > SCREEN_HEIGHT:
+                mirrored, center_x, center_y, speed = enemy.data()
+                enemy.kill()
+                textures = [arcade.load_texture(f"{ENEMY_IMAGE}{i}.png",
+                                                mirrored=not mirrored) for i in range(8)]
+                enemy = Enemy(textures, not mirrored, -speed)
+                if mirrored:
+                    center_x += 5
+                else:
+                    center_x -= 5
+                enemy.center_x = center_x
+                enemy.center_y = center_y
+                enemy.scale = 0.45
+                self.enemies.append(enemy)
+                self.all_sprites.append(enemy)
         position = self.music.get_stream_position(self.current_player)
         if position == 0.0:
             self.play_song()
