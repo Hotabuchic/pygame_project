@@ -352,11 +352,12 @@ class NewGameView(arcade.View):
         self.ui_manager.add_ui_element(btn_cancel)
 
     def ok(self):
-        global count_coins
+        global count_coins, count_stars, all_levels
         self.btn_2.play(1.25)
         database.change_data("levels", "completed = 'False', all_coins = '+++'")
-        database.change_data("player_info", "count_coins = 0")
-        count_coins = database.get_data("player_info", "count_coins")[0][0]
+        count_coins = think_coins(database.get_data("levels", "all_coins"))
+        count_stars = think_stars(database.get_data("levels", "completed"))
+        all_levels = database.get_data("levels")
         self.cancel()
 
     def cancel(self):
@@ -502,8 +503,18 @@ class LevelsMenuView(arcade.View):
                          color=arcade.color.WHITE, font_size=60, bold=True)
         arcade.draw_text(str(count_stars), SCREEN_WIDTH - 80, SCREEN_HEIGHT - 165, anchor_x="right",
                          color=arcade.color.WHITE, font_size=60, bold=True)
-        arcade.draw_text(all_levels[self.num_level][1], start_x=SCREEN_WIDTH // 2, start_y=SCREEN_HEIGHT - 250,
+        arcade.draw_text(all_levels[self.num_level][1], start_x=SCREEN_WIDTH // 2, start_y=SCREEN_HEIGHT - 200,
                          anchor_x="center", color=arcade.color.ORANGE, font_size=44, font_name="")
+        count = all_levels[self.num_level][4].count("-")
+        text = f"Собрано монет на уровне: {count}"
+        if count == 3:
+            text = "На уровне уже собраны все монеты"
+        arcade.draw_text(text=text,
+                         start_x=SCREEN_WIDTH // 2,
+                         start_y=SCREEN_HEIGHT - 260,
+                         anchor_x="center", color=arcade.color.YELLOW_ORANGE,
+                         font_size=24, font_name="")
+
         self.cursor.draw()
 
 
@@ -524,13 +535,18 @@ class GameView(arcade.View):
     def __init__(self, data_level):
         super(GameView, self).__init__()
         self.data_level = data_level
+        self.id = data_level[0]
         self.level = load_level(data_level[2])
-        self.level_coins = data_level[4]
+        self.completed = data_level[3]
+        self.count_hit = help_dict_for_stars[level]
+        self.level_coins = list(data_level[4])
         self.wall_image = data_level[5]
         self.floor_image = data_level[6]
         self.all_sprites = arcade.SpriteList()
         self.hearts = arcade.SpriteList()
         self.coins = arcade.SpriteList()
+        self.coins_list = []
+        self.get_coin = []
         self.floors = arcade.SpriteList()
         self.walls = arcade.SpriteList()
         self.horizontal_enemies = arcade.SpriteList()
@@ -580,19 +596,19 @@ class GameView(arcade.View):
                                                scale=0.35)
                     self.all_sprites.append(self.exitt)
                 elif column in "123":
-                    if self.level_coins[int(column) - 1] == "+":
-                        textures = [arcade.load_texture(COIN_IMAGE),
-                                    arcade.load_texture(COIN_IMAGE_2),
-                                    arcade.load_texture(COIN_IMAGE_3),
-                                    arcade.load_texture(COIN_IMAGE_4),
-                                    arcade.load_texture(COIN_IMAGE_3, mirrored=True),
-                                    arcade.load_texture(COIN_IMAGE_2, mirrored=True)]
-                        coin = Coin(textures)
-                        coin.center_x = x * TILE_SIZE + TILE_SIZE // 2
-                        coin.center_y = (len(self.level) - y - 1) * TILE_SIZE + TILE_SIZE // 2
-                        coin.scale = 0.7
-                        self.coins.append(coin)
-                        self.all_sprites.append(coin)
+                    textures = [arcade.load_texture(COIN_IMAGE),
+                                arcade.load_texture(COIN_IMAGE_2),
+                                arcade.load_texture(COIN_IMAGE_3),
+                                arcade.load_texture(COIN_IMAGE_4),
+                                arcade.load_texture(COIN_IMAGE_3, mirrored=True),
+                                arcade.load_texture(COIN_IMAGE_2, mirrored=True)]
+                    coin = Coin(textures)
+                    coin.center_x = x * TILE_SIZE + TILE_SIZE // 2
+                    coin.center_y = (len(self.level) - y - 1) * TILE_SIZE + TILE_SIZE // 2
+                    coin.scale = 0.7
+                    self.coins_list.append(int(column))
+                    self.coins.append(coin)
+                    self.all_sprites.append(coin)
                 elif column == "O":
                     textures = [arcade.load_texture(f"{ENEMY_IMAGE}_walk{i}.png",
                                                     mirrored=True) for i in range(8)]
@@ -646,25 +662,35 @@ class GameView(arcade.View):
         sleep(0.03)
 
     def on_update(self, delta_time: float):
+        global all_levels, count_coins, count_stars
         self.time_after_hit += delta_time
         self.coins.update()
         self.vertical_enemies.update()
         self.horizontal_enemies.update()
         self.player.update()
         if self.player.collides_with_sprite(self.exitt):
+            if len(self.get_coin) > self.level_coins.count("-"):
+                for i in self.get_coin:
+                    self.level_coins[i - 1] = "-"
+                database.change_data("levels",
+                                     f"all_coins = '{''.join(self.level_coins)}'",
+                                     data_criterion=f"id = {self.id}")
+            if help_dict_for_stars[level] > help_dict_for_stars[self.completed]:
+                database.change_data("levels",
+                                     f"completed = '{level}'",
+                                     data_criterion=f"id = {self.id}")
+            all_levels = database.get_data("levels")
+            count_coins = think_coins(database.get_data("levels", "all_coins"))
+            count_stars = think_stars(database.get_data("levels", "completed"))
+            self.data_level = all_levels[int(self.id) - 1]
             self.off_music()
             self.win_sound.play()
             view = GameWinView(self, self.data_level)
             self.window.show_view(view)
         if self.player.collides_with_list(self.vertical_enemies) \
                 or self.player.collides_with_list(self.horizontal_enemies):
-            if self.time_after_hit >= 1:
-                count_hit = 1
-                if level == "средний":
-                    count_hit = 2
-                elif level == "сложный":
-                    count_hit = 3
-                for i in range(count_hit):
+            if self.time_after_hit >= 0.7:
+                for i in range(self.count_hit):
                     if self.hearts:
                         self.hearts[-1].kill()
                 self.hit_sound.play()
@@ -677,6 +703,7 @@ class GameView(arcade.View):
         for coin in self.player.collides_with_list(self.coins):
             self.coin_sound.play()
             self.count_coin += 1
+            self.get_coin.append(self.coins_list[self.coins.index(coin)])
             coin.kill()
         for enemy in self.vertical_enemies:
             if enemy.collides_with_list(self.walls) \
