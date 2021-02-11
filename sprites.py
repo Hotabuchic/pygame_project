@@ -43,6 +43,18 @@ class Enemy(arcade.Sprite):
         return self.mirrored, self.center_x, self.center_y, self.speed
 
 
+class VerticalEnemy(arcade.Sprite):
+    def __init__(self, image, speed_y):
+        super(VerticalEnemy, self).__init__(filename=image)
+        self.speed_y = speed_y
+
+    def update(self):
+        self.center_y += self.speed_y
+
+    def set_speed(self):
+        self.speed_y = -self.speed_y
+
+
 class Player(arcade.Sprite):
     def __init__(self, path_to_textures):
         super(Player, self).__init__(hit_box_algorithm="Detailed")

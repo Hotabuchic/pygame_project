@@ -1,11 +1,10 @@
 from time import sleep
 
-import arcade
 from arcade.gui import UIManager, UILabel, UIFlatButton, UIImageButton
 
 from constants import *
 from databse import DataBase
-from sprites import Coin, Enemy, Player
+from sprites import *
 
 help_dict_for_stars = {"False": 0, "лёгкий": 1, "средний": 2, "сложный": 3}
 
@@ -534,11 +533,17 @@ class GameView(arcade.View):
         self.coins = arcade.SpriteList()
         self.floors = arcade.SpriteList()
         self.walls = arcade.SpriteList()
-        self.enemies = arcade.SpriteList()
+        self.horizontal_enemies = arcade.SpriteList()
+        self.vertical_enemies = arcade.SpriteList()
         self.player = None
+        self.exitt = None
         self.music = BACKGROUND_SOUND
+        self.coin_sound = COINS_SOUND
+        self.hit_sound = HIT_SOUND
+        self.died_sound = DIED_SOUND
+        self.win_sound = WIN_SOUND
         self.count_coin = 0
-        self.hit = 0
+        self.time_after_hit = 1
         self.setup()
 
     def setup(self):
@@ -553,7 +558,7 @@ class GameView(arcade.View):
 
         for y, string in enumerate(self.level):
             for x, column in enumerate(string):
-                if column in ".@123OE":
+                if column in ".@123OEV":
                     floor = arcade.Sprite(f"images/{self.floor_image}",
                                           center_x=x * TILE_SIZE + TILE_SIZE // 2,
                                           center_y=(len(self.level) - y - 1) * TILE_SIZE + TILE_SIZE // 2)
@@ -569,11 +574,11 @@ class GameView(arcade.View):
         for y, string in enumerate(self.level):
             for x, column in enumerate(string):
                 if column == "E":
-                    exitt = arcade.Sprite(EXIT_IMAGE,
-                                          center_x=x * TILE_SIZE + TILE_SIZE // 2,
-                                          center_y=(len(self.level) - y - 1) * TILE_SIZE + TILE_SIZE // 3,
-                                          scale=0.35)
-                    self.all_sprites.append(exitt)
+                    self.exitt = arcade.Sprite(EXIT_IMAGE,
+                                               center_x=x * TILE_SIZE + TILE_SIZE // 2,
+                                               center_y=(len(self.level) - y - 1) * TILE_SIZE + TILE_SIZE // 3,
+                                               scale=0.35)
+                    self.all_sprites.append(self.exitt)
                 elif column in "123":
                     if self.level_coins[int(column) - 1] == "+":
                         textures = [arcade.load_texture(COIN_IMAGE),
@@ -589,13 +594,20 @@ class GameView(arcade.View):
                         self.coins.append(coin)
                         self.all_sprites.append(coin)
                 elif column == "O":
-                    textures = [arcade.load_texture(f"{ENEMY_IMAGE}{i}.png",
+                    textures = [arcade.load_texture(f"{ENEMY_IMAGE}_walk{i}.png",
                                                     mirrored=True) for i in range(8)]
                     enemy = Enemy(textures, True, -5)
                     enemy.center_x = x * TILE_SIZE + TILE_SIZE // 2
                     enemy.center_y = (len(self.level) - y - 1) * TILE_SIZE + TILE_SIZE // 2 + 5
                     enemy.scale = 0.45
-                    self.enemies.append(enemy)
+                    self.horizontal_enemies.append(enemy)
+                    self.all_sprites.append(enemy)
+                elif column == "V":
+                    enemy = VerticalEnemy(f"{ENEMY_IMAGE}_idle.png", 1)
+                    enemy.center_x = x * TILE_SIZE + TILE_SIZE // 2
+                    enemy.center_y = (len(self.level) - y - 1) * TILE_SIZE + TILE_SIZE // 2 + 5
+                    enemy.scale = 0.45
+                    self.vertical_enemies.append(enemy)
                     self.all_sprites.append(enemy)
                 elif column == "@":
                     self.player = Player(path_to_textures=player)
@@ -634,27 +646,62 @@ class GameView(arcade.View):
         sleep(0.03)
 
     def on_update(self, delta_time: float):
+        self.time_after_hit += delta_time
         self.coins.update()
-        self.enemies.update()
+        self.vertical_enemies.update()
+        self.horizontal_enemies.update()
         self.player.update()
+        if self.player.collides_with_sprite(self.exitt):
+            self.off_music()
+            self.win_sound.play()
+            view = GameWinView(self, self.data_level)
+            self.window.show_view(view)
+        if self.player.collides_with_list(self.vertical_enemies) \
+                or self.player.collides_with_list(self.horizontal_enemies):
+            if self.time_after_hit >= 1:
+                count_hit = 1
+                if level == "средний":
+                    count_hit = 2
+                elif level == "сложный":
+                    count_hit = 3
+                for i in range(count_hit):
+                    if self.hearts:
+                        self.hearts[-1].kill()
+                self.hit_sound.play()
+                self.time_after_hit = 0
+                if not self.hearts:
+                    self.off_music()
+                    self.died_sound.play()
+                    view = GameEndView(self, self.data_level)
+                    self.window.show_view(view)
         for coin in self.player.collides_with_list(self.coins):
+            self.coin_sound.play()
             self.count_coin += 1
             coin.kill()
-        for enemy in self.enemies:
-            if enemy.collides_with_list(self.walls) or enemy.left < 0 or enemy.right > SCREEN_HEIGHT:
+        for enemy in self.vertical_enemies:
+            if enemy.collides_with_list(self.walls) \
+                    or enemy.bottom < 0 \
+                    or enemy.top > SCREEN_HEIGHT - 50 \
+                    or enemy.collides_with_sprite(self.exitt):
+                enemy.set_speed()
+        for enemy in self.horizontal_enemies:
+            if enemy.collides_with_list(self.walls) \
+                    or enemy.left < 0 \
+                    or enemy.right > SCREEN_HEIGHT \
+                    or enemy.collides_with_sprite(self.exitt):
                 mirrored, center_x, center_y, speed = enemy.data()
                 enemy.kill()
-                textures = [arcade.load_texture(f"{ENEMY_IMAGE}{i}.png",
+                textures = [arcade.load_texture(f"{ENEMY_IMAGE}_walk{i}.png",
                                                 mirrored=not mirrored) for i in range(8)]
                 enemy = Enemy(textures, not mirrored, -speed)
                 if mirrored:
-                    center_x += 5
+                    center_x += 8
                 else:
-                    center_x -= 5
+                    center_x -= 8
                 enemy.center_x = center_x
                 enemy.center_y = center_y
                 enemy.scale = 0.45
-                self.enemies.append(enemy)
+                self.horizontal_enemies.append(enemy)
                 self.all_sprites.append(enemy)
         position = self.music.get_stream_position(self.current_player)
         if position == 0.0:
@@ -719,6 +766,98 @@ class PauseView(arcade.View):
         if symbol == arcade.key.ESCAPE:
             self.window.show_view(self.game_view)
         elif symbol == arcade.key.R:
+            self.game_view.off_music()
+            view = GameView(self.data_level)
+            self.window.show_view(view)
+        elif symbol == arcade.key.ENTER:
+            self.game_view.off_music()
+            view = LevelsMenuView()
+            self.window.show_view(view)
+
+
+class GameEndView(arcade.View):
+    def __init__(self, game_view, data_level):
+        super().__init__()
+        self.game_view = game_view
+        self.data_level = data_level
+
+    def on_show(self):
+        arcade.set_viewport(0, SCREEN_WIDTH - 1, 0, SCREEN_HEIGHT - 1)
+
+    def on_draw(self):
+        arcade.start_render()
+
+        arcade.draw_lrtb_rectangle_filled(0, SCREEN_WIDTH, SCREEN_HEIGHT, 0,
+                                          arcade.color.RED_DEVIL)
+        arcade.draw_text("DEFEAT", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 150,
+                         arcade.color.BLACK, font_size=50, anchor_x="center")
+        arcade.draw_text("Нажмите Enter, чтобы вернуться в меню.",
+                         SCREEN_WIDTH / 2,
+                         SCREEN_HEIGHT / 2,
+                         arcade.color.BLACK,
+                         font_size=24,
+                         anchor_x="center")
+        arcade.draw_text("Нажмите R, чтобы перезапустить уровень.",
+                         SCREEN_WIDTH / 2,
+                         SCREEN_HEIGHT / 2 - 80,
+                         arcade.color.BLACK,
+                         font_size=24,
+                         anchor_x="center")
+
+    def on_key_press(self, symbol: int, modifiers: int):
+        if symbol == arcade.key.R:
+            self.game_view.off_music()
+            view = GameView(self.data_level)
+            self.window.show_view(view)
+        elif symbol == arcade.key.ENTER:
+            self.game_view.off_music()
+            view = LevelsMenuView()
+            self.window.show_view(view)
+
+
+class GameWinView(arcade.View):
+    def __init__(self, game_view, data_level):
+        super().__init__()
+        self.game_view = game_view
+        self.data_level = data_level
+
+    def on_show(self):
+        arcade.set_viewport(0, SCREEN_WIDTH - 1, 0, SCREEN_HEIGHT - 1)
+
+    def on_draw(self):
+        arcade.start_render()
+
+        arcade.draw_lrtb_rectangle_filled(0, SCREEN_WIDTH, SCREEN_HEIGHT, 0,
+                                          arcade.color.GREEN)
+        arcade.draw_text("WIN", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 150,
+                         arcade.color.BLACK, font_size=50, anchor_x="center")
+        arcade.draw_text(f"Вы собрали {self.game_view.count_coin} монет!",
+                         SCREEN_WIDTH / 2,
+                         SCREEN_HEIGHT / 2,
+                         arcade.color.BLACK,
+                         font_size=24,
+                         anchor_x="center")
+        arcade.draw_text(f'Уровень пройден на уровне сложности - "{level}"',
+                         SCREEN_WIDTH / 2,
+                         SCREEN_HEIGHT / 2 - 80,
+                         arcade.color.BLACK,
+                         font_size=24,
+                         anchor_x="center")
+        arcade.draw_text("Нажмите Enter, чтобы вернуться в меню.",
+                         SCREEN_WIDTH / 2,
+                         SCREEN_HEIGHT / 2 - 160,
+                         arcade.color.BLACK,
+                         font_size=24,
+                         anchor_x="center")
+        arcade.draw_text("Нажмите R, чтобы перезапустить уровень.",
+                         SCREEN_WIDTH / 2,
+                         SCREEN_HEIGHT / 2 - 240,
+                         arcade.color.BLACK,
+                         font_size=24,
+                         anchor_x="center")
+
+    def on_key_press(self, symbol: int, modifiers: int):
+        if symbol == arcade.key.R:
             self.game_view.off_music()
             view = GameView(self.data_level)
             self.window.show_view(view)
