@@ -116,6 +116,13 @@ class MainMenuView(arcade.View):
         btn_settings.set_handler("on_click", self.settings)
         self.ui_manager.add_ui_element(btn_settings)
 
+        btn_instruction = UIImageButton(center_x=50,
+                                        center_y=45,
+                                        normal_texture=arcade.load_texture(INSTRUCTION_IMAGE),
+                                        press_texture=arcade.load_texture(INSTRUCTION_IMAGE_2))
+        btn_instruction.set_handler("on_click", self.instruction)
+        self.ui_manager.add_ui_element(btn_instruction)
+
     def new_game(self):
         self.btn.play()
         self.ui_manager.purge_ui_elements()
@@ -137,6 +144,12 @@ class MainMenuView(arcade.View):
         self.btn_settings.play()
         self.ui_manager.purge_ui_elements()
         view = SettingsView()
+        self.window.show_view(view)
+
+    def instruction(self):
+        self.btn_settings.play()
+        self.ui_manager.purge_ui_elements()
+        view = InstructionView()
         self.window.show_view(view)
 
     def on_show(self):
@@ -379,13 +392,13 @@ class NewGameView(arcade.View):
 
 
 class LevelsMenuView(arcade.View):
-    def __init__(self):
+    def __init__(self, num_level=0):
         super(LevelsMenuView, self).__init__()
         self.background = None
         self.coin = None
         self.star = None
         self.first_star, self.second_star, self.third_star = None, None, None
-        self.num_level = 0
+        self.num_level = num_level
         self.ui_manager = UIManager(self.window)
         self.set_star()
         self.setup()
@@ -559,7 +572,7 @@ class GameView(arcade.View):
         self.died_sound = DIED_SOUND
         self.win_sound = WIN_SOUND
         self.count_coin = 0
-        self.time_after_hit = 1
+        self.time_after_hit = 0.7
         self.setup()
 
     def setup(self):
@@ -592,7 +605,7 @@ class GameView(arcade.View):
                 if column == "E":
                     self.exitt = arcade.Sprite(EXIT_IMAGE,
                                                center_x=x * TILE_SIZE + TILE_SIZE // 2,
-                                               center_y=(len(self.level) - y - 1) * TILE_SIZE + TILE_SIZE // 3,
+                                               center_y=(len(self.level) - y - 1) * TILE_SIZE + TILE_SIZE // 2.2,
                                                scale=0.35)
                     self.all_sprites.append(self.exitt)
                 elif column in "123":
@@ -650,7 +663,7 @@ class GameView(arcade.View):
             self.player.center_y += 50
             if self.player.collides_with_list(self.walls) or self.player.top >= SCREEN_HEIGHT - 50:
                 self.player.center_y -= 50
-            self.player.index(0)
+            self.player.index(3)
         if symbol == arcade.key.DOWN:
             self.player.center_y -= 50
             if self.player.collides_with_list(self.walls) or self.player.bottom <= 0:
@@ -669,16 +682,16 @@ class GameView(arcade.View):
         self.horizontal_enemies.update()
         self.player.update()
         if self.player.collides_with_sprite(self.exitt):
-            if len(self.get_coin) > self.level_coins.count("-"):
-                for i in self.get_coin:
-                    self.level_coins[i - 1] = "-"
-                database.change_data("levels",
-                                     f"all_coins = '{''.join(self.level_coins)}'",
-                                     data_criterion=f"id = {self.id}")
-            if help_dict_for_stars[level] > help_dict_for_stars[self.completed]:
+            if help_dict_for_stars[level] >= help_dict_for_stars[self.completed]:
                 database.change_data("levels",
                                      f"completed = '{level}'",
                                      data_criterion=f"id = {self.id}")
+                if len(self.get_coin) > self.level_coins.count("-"):
+                    for i in self.get_coin:
+                        self.level_coins[i - 1] = "-"
+                    database.change_data("levels",
+                                         f"all_coins = '{''.join(self.level_coins)}'",
+                                         data_criterion=f"id = {self.id}")
             all_levels = database.get_data("levels")
             count_coins = think_coins(database.get_data("levels", "all_coins"))
             count_stars = think_stars(database.get_data("levels", "completed"))
@@ -700,11 +713,13 @@ class GameView(arcade.View):
                     self.died_sound.play()
                     view = GameEndView(self, self.data_level)
                     self.window.show_view(view)
-        for coin in self.player.collides_with_list(self.coins):
-            self.coin_sound.play()
-            self.count_coin += 1
-            self.get_coin.append(self.coins_list[self.coins.index(coin)])
-            coin.kill()
+        for i, coin in enumerate(self.coins):
+            if self.player.collides_with_sprite(coin):
+                self.coin_sound.play()
+                self.count_coin += 1
+                self.get_coin.append(self.coins_list[i])
+                del self.coins_list[i]
+                coin.kill()
         for enemy in self.vertical_enemies:
             if enemy.collides_with_list(self.walls) \
                     or enemy.bottom < 0 \
@@ -798,7 +813,7 @@ class PauseView(arcade.View):
             self.window.show_view(view)
         elif symbol == arcade.key.ENTER:
             self.game_view.off_music()
-            view = LevelsMenuView()
+            view = LevelsMenuView(self.data_level[0] - 1)
             self.window.show_view(view)
 
 
@@ -838,7 +853,7 @@ class GameEndView(arcade.View):
             self.window.show_view(view)
         elif symbol == arcade.key.ENTER:
             self.game_view.off_music()
-            view = LevelsMenuView()
+            view = LevelsMenuView(self.data_level[0] - 1)
             self.window.show_view(view)
 
 
@@ -890,5 +905,90 @@ class GameWinView(arcade.View):
             self.window.show_view(view)
         elif symbol == arcade.key.ENTER:
             self.game_view.off_music()
-            view = LevelsMenuView()
+            view = LevelsMenuView(self.data_level[0] - 1)
             self.window.show_view(view)
+
+
+class InstructionView(arcade.View):
+    def __init__(self):
+        super(InstructionView, self).__init__()
+        self.background = None
+        self.coin = None
+        self.star = None
+        self.ui_manager = UIManager(self.window)
+        self.setup()
+        self.cursor = CURSOR
+        self.btn_instruction = SETTINGS_SOUND
+
+    def setup(self):
+        self.ui_manager.purge_ui_elements()
+
+        text = UILabel("Об игре",
+                       center_x=SCREEN_WIDTH // 2,
+                       center_y=SCREEN_HEIGHT - 100)
+        text.set_style_attrs(font_color=arcade.color.BABY_BLUE, font_size=44)
+        self.ui_manager.add_ui_element(text)
+
+        btn_instruction = UIImageButton(center_x=50,
+                                        center_y=45,
+                                        normal_texture=arcade.load_texture(INSTRUCTION_IMAGE),
+                                        press_texture=arcade.load_texture(INSTRUCTION_IMAGE_2))
+        btn_instruction.set_handler("on_click", self.instruction)
+        self.ui_manager.add_ui_element(btn_instruction)
+
+    def instruction(self):
+        self.btn_instruction.play()
+        self.ui_manager.purge_ui_elements()
+        view = MainMenuView()
+        self.window.show_view(view)
+
+    def on_mouse_motion(self, x: float, y: float, dx: float, dy: float):
+        self.cursor.center_x = x
+        self.cursor.center_y = y
+
+    def on_show(self):
+        arcade.set_viewport(0, SCREEN_WIDTH - 1, 0, SCREEN_HEIGHT - 1)
+        self.background = BACKGROUND
+        self.coin = COIN
+        self.star = STAR
+
+    def on_draw(self):
+        arcade.start_render()
+        self.background.draw()
+        self.coin.draw()
+        self.star.draw()
+        arcade.draw_text(str(count_coins),
+                         SCREEN_WIDTH - 80,
+                         SCREEN_HEIGHT - 82,
+                         anchor_x="right",
+                         color=arcade.color.WHITE,
+                         font_size=60,
+                         bold=True)
+        arcade.draw_text(str(count_stars),
+                         SCREEN_WIDTH - 80,
+                         SCREEN_HEIGHT - 165,
+                         anchor_x="right",
+                         color=arcade.color.WHITE,
+                         font_size=60,
+                         bold=True)
+        arcade.draw_text(f"{SCREEN_TITLE} - игра с множеством"
+                         f" уровней,\nдля прохождения"
+                         f" которых нужно выйти из лабиринта.",
+                         SCREEN_WIDTH // 2, 530,
+                         color=arcade.color.BABY_BLUE,
+                         font_size=24,
+                         anchor_x="center")
+        arcade.draw_text('На один уровень у вас есть 3 "сердчека" - жизни.'
+                         "\nВ зависимости от уровня сложности"
+                         "\nпротивники в лабиринте наносят разный урон.",
+                         SCREEN_WIDTH // 2 + 80, 400,
+                         color=arcade.color.BABY_BLUE,
+                         font_size=24,
+                         anchor_x="center")
+        arcade.draw_text('Если "сердечки" закончатся - \n'
+                         'вы потеряете весь прогрес на данном уровне.',
+                         SCREEN_WIDTH // 2 - 50, 270,
+                         color=arcade.color.BABY_BLUE,
+                         font_size=24,
+                         anchor_x="center")
+        self.cursor.draw()

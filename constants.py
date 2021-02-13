@@ -2,7 +2,7 @@ from arcade import Sprite, Sound
 
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 800
-SCREEN_TITLE = "Бродилка"
+SCREEN_TITLE = "Baby Blue"
 SCALING_BACKGROUND = 0.8
 SCALING_BACKGROUND2 = 1.07
 BACKGROUND = Sprite("images/background2.jpg", SCALING_BACKGROUND,
@@ -44,3 +44,5 @@ COINS_SOUND = Sound(":resources:sounds/coin1.wav")
 HIT_SOUND = Sound("sound/hit.wav")
 DIED_SOUND = Sound("sound/died.mp3")
 WIN_SOUND = Sound("sound/game-win-sound-effect.mp3")
+INSTRUCTION_IMAGE = "images/instruction.png"
+INSTRUCTION_IMAGE_2 = "images/instruction2.png"

@@ -62,7 +62,8 @@ class Player(arcade.Sprite):
         self.textures = [arcade.load_texture(f"{self.path_to_textures}_idle.png"),
                          arcade.load_texture(f"{self.path_to_textures}_walk5.png"),
                          arcade.load_texture(f"{self.path_to_textures}_walk5.png",
-                                             mirrored=True)]
+                                             mirrored=True),
+                         arcade.load_texture(f"{self.path_to_textures}_climb0.png")]
         self.texture_index = 0
         self.set_texture(self.texture_index)
 

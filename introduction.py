@@ -24,9 +24,15 @@ class IntroductionView(arcade.View):
         arcade.start_render()
         self.background.draw()
         arcade.draw_text(SCREEN_TITLE, SCREEN_WIDTH // 2,
-                         SCREEN_HEIGHT // 2, arcade.color.WHITE_SMOKE, anchor_x="center", font_size=50)
-        arcade.draw_text("Нажмите любую кнопку чтобы продолжить", SCREEN_WIDTH // 2,
-                         SCREEN_HEIGHT // 2 - 80, arcade.color.RED, anchor_x="center", font_size=20)
+                         SCREEN_HEIGHT // 2,
+                         arcade.color.BABY_BLUE,
+                         anchor_x="center",
+                         font_size=50)
+        arcade.draw_text("Нажмите любую кнопку чтобы продолжить",
+                         SCREEN_WIDTH // 2,
+                         SCREEN_HEIGHT // 2 - 80, arcade.color.RED,
+                         anchor_x="center",
+                         font_size=20)
         self.cursor.draw()
 
     def on_key_press(self, symbol: int, modifiers: int):
