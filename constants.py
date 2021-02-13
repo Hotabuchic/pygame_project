@@ -46,3 +46,7 @@ DIED_SOUND = Sound("sound/died.mp3")
 WIN_SOUND = Sound("sound/game-win-sound-effect.mp3")
 INSTRUCTION_IMAGE = "images/instruction.png"
 INSTRUCTION_IMAGE_2 = "images/instruction2.png"
+RUSSIA_IMAGE = "images/russia.png"
+RUSSIA_IMAGE_2 = "images/russia2.png"
+ENGLISH_IMAGE = "images/english.png"
+ENGLISH_IMAGE_2 = "images/english2.png"
