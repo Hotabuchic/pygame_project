@@ -1,6 +1,11 @@
 import arcade
+
 from constants import *
+from databse import DataBase
 from menu import MainMenuView
+
+database = DataBase()
+language = database.get_data("player_info", "language")[0][0]
 
 
 class IntroductionView(arcade.View):
@@ -28,7 +33,9 @@ class IntroductionView(arcade.View):
                          arcade.color.BABY_BLUE,
                          anchor_x="center",
                          font_size=50)
-        arcade.draw_text("Нажмите любую кнопку чтобы продолжить",
+        arcade.draw_text(database.get_data("dictionary",
+                                           language,
+                                           "russian = 'Нажмите любую кнопку чтобы продолжить'")[0][0],
                          SCREEN_WIDTH // 2,
                          SCREEN_HEIGHT // 2 - 80, arcade.color.RED,
                          anchor_x="center",

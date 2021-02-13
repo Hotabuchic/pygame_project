@@ -54,13 +54,19 @@ class MainMenuView(arcade.View):
     def setup(self):
         self.ui_manager.purge_ui_elements()
 
-        text = UILabel("Главное меню",
+        text = UILabel(database.get_data("dictionary",
+                                         language,
+                                         "russian = 'Главное меню'")[0][0],
                        center_x=SCREEN_WIDTH // 2,
                        center_y=SCREEN_HEIGHT - 100)
         text.set_style_attrs(font_color=arcade.color.BABY_BLUE, font_size=44)
         self.ui_manager.add_ui_element(text)
 
-        btn_new = UIFlatButton("Новая игра", center_x=SCREEN_WIDTH // 2, center_y=550,
+        btn_new = UIFlatButton(database.get_data("dictionary",
+                                                 language,
+                                                 "russian = 'Новая игра'")[0][0],
+                               center_x=SCREEN_WIDTH // 2,
+                               center_y=550,
                                height=100, width=300)
         btn_new.set_style_attrs(
             font_color=arcade.color.WHITE,
@@ -77,7 +83,11 @@ class MainMenuView(arcade.View):
         btn_new.set_handler("on_click", self.new_game)
         self.ui_manager.add_ui_element(btn_new)
 
-        btn_resume = UIFlatButton("Продолжить", center_x=SCREEN_WIDTH // 2, center_y=400,
+        btn_resume = UIFlatButton(database.get_data("dictionary",
+                                                    language,
+                                                    "russian = 'Продолжить'")[0][0],
+                                  center_x=SCREEN_WIDTH // 2,
+                                  center_y=400,
                                   height=100, width=300)
         btn_resume.set_style_attrs(
             font_color=arcade.color.WHITE,
@@ -94,7 +104,11 @@ class MainMenuView(arcade.View):
         btn_resume.set_handler("on_click", self.resume)
         self.ui_manager.add_ui_element(btn_resume)
 
-        btn_end = UIFlatButton("Выйти из игры", center_x=SCREEN_WIDTH // 2, center_y=250,
+        btn_end = UIFlatButton(database.get_data("dictionary",
+                                                 language,
+                                                 "russian = 'Выйти из игры'")[0][0],
+                               center_x=SCREEN_WIDTH // 2,
+                               center_y=250,
                                height=100, width=300)
         btn_end.set_style_attrs(
             font_color=arcade.color.WHITE,
@@ -190,7 +204,9 @@ class SettingsView(arcade.View):
     def setup(self):
         self.ui_manager.purge_ui_elements()
 
-        text = UILabel("Настройки",
+        text = UILabel(database.get_data("dictionary",
+                                         language,
+                                         "russian = 'Настройки'")[0][0],
                        center_x=SCREEN_WIDTH // 2,
                        center_y=SCREEN_HEIGHT - 100)
         text.set_style_attrs(font_color=arcade.color.BABY_BLUE, font_size=44)
@@ -202,19 +218,25 @@ class SettingsView(arcade.View):
         btn_settings.set_handler("on_click", self.settings)
         self.ui_manager.add_ui_element(btn_settings)
 
-        text_level = UILabel("Выбор уровня сложности:",
+        text_level = UILabel(database.get_data("dictionary",
+                                               language,
+                                               "russian = 'Выбор уровня сложности:'")[0][0],
                              center_x=SCREEN_WIDTH // 2,
                              center_y=SCREEN_HEIGHT - 220)
         text_level.set_style_attrs(font_color=arcade.color.BABY_BLUE, font_size=30)
         self.ui_manager.add_ui_element(text_level)
 
-        text_language = UILabel("Выбор языка:",
+        text_language = UILabel(database.get_data("dictionary",
+                                                  language,
+                                                  "russian = 'Выбор языка:'")[0][0],
                                 center_x=SCREEN_WIDTH // 2,
                                 center_y=SCREEN_HEIGHT - 600)
         text_language.set_style_attrs(font_color=arcade.color.BABY_BLUE, font_size=30)
         self.ui_manager.add_ui_element(text_language)
 
-        level_easy = UIFlatButton("Лёгкий",
+        level_easy = UIFlatButton(database.get_data("dictionary",
+                                                    language,
+                                                    "russian = 'Лёгкий'")[0][0],
                                   center_x=200, center_y=SCREEN_HEIGHT - 325,
                                   width=180, height=100)
         level_easy.set_handler("on_click", self.easy)
@@ -232,7 +254,9 @@ class SettingsView(arcade.View):
         )
         self.ui_manager.add_ui_element(level_easy)
 
-        level_medium = UIFlatButton("Средний",
+        level_medium = UIFlatButton(database.get_data("dictionary",
+                                                      language,
+                                                      "russian = 'Средний'")[0][0],
                                     center_x=400, center_y=SCREEN_HEIGHT - 325,
                                     width=180, height=100)
         level_medium.set_handler("on_click", self.medium)
@@ -250,7 +274,9 @@ class SettingsView(arcade.View):
         )
         self.ui_manager.add_ui_element(level_medium)
 
-        level_hard = UIFlatButton("Сложный",
+        level_hard = UIFlatButton(database.get_data("dictionary",
+                                                    language,
+                                                    "russian = 'Сложный'")[0][0],
                                   center_x=600, center_y=SCREEN_HEIGHT - 325,
                                   width=180, height=100)
         level_hard.set_handler("on_click", self.hard)
@@ -308,11 +334,13 @@ class SettingsView(arcade.View):
         global language
         database.change_data("player_info", "language = 'russian'")
         language = database.get_data("player_info", "language")[0][0]
+        self.setup()
 
     def english(self):
         global language
         database.change_data("player_info", "language = 'english'")
         language = database.get_data("player_info", "language")[0][0]
+        self.setup()
 
     def on_show(self):
         arcade.set_viewport(0, SCREEN_WIDTH - 1, 0, SCREEN_HEIGHT - 1)
@@ -329,8 +357,20 @@ class SettingsView(arcade.View):
                          color=arcade.color.WHITE, font_size=60, bold=True)
         arcade.draw_text(str(count_stars), SCREEN_WIDTH - 80, SCREEN_HEIGHT - 165, anchor_x="right",
                          color=arcade.color.WHITE, font_size=60, bold=True)
-        arcade.draw_text(f"Сейчас выбран\n{level} уровень сложности", 150, 300,
-                         color=arcade.color.BABY_BLUE, font_size=34)
+        arcade.draw_text(database.get_data("dictionary",
+                                           language,
+                                           "russian = 'Сейчас выбран'")[0][0],
+                         150,
+                         300,
+                         color=arcade.color.BABY_BLUE,
+                         font_size=34)
+        arcade.draw_text(database.get_data("dictionary",
+                                           language,
+                                           f"russian = '{level} уровень сложности'")[0][0],
+                         150,
+                         268,
+                         color=arcade.color.BABY_BLUE,
+                         font_size=34)
         self.cursor.draw()
 
 
@@ -351,13 +391,17 @@ class NewGameView(arcade.View):
     def setup(self):
         self.ui_manager.purge_ui_elements()
 
-        text = UILabel("Вы точно хотите начать новую игру?",
+        text = UILabel(database.get_data("dictionary",
+                                         language,
+                                         "russian = 'Вы точно хотите начать новую игру?'")[0][0],
                        center_x=SCREEN_WIDTH // 2,
                        center_y=SCREEN_HEIGHT - 100)
         text.set_style_attrs(font_color=arcade.color.BABY_BLUE, font_size=34)
         self.ui_manager.add_ui_element(text)
 
-        btn_ok = UIFlatButton("Да",
+        btn_ok = UIFlatButton(database.get_data("dictionary",
+                                                language,
+                                                "russian = 'Да'")[0][0],
                               center_x=225, center_y=SCREEN_HEIGHT // 2 - 75,
                               width=225, height=100)
         btn_ok.set_handler("on_click", self.ok)
@@ -375,7 +419,9 @@ class NewGameView(arcade.View):
         )
         self.ui_manager.add_ui_element(btn_ok)
 
-        btn_cancel = UIFlatButton("Отмена",
+        btn_cancel = UIFlatButton(database.get_data("dictionary",
+                                                    language,
+                                                    "russian = 'Отмена'")[0][0],
                                   center_x=575, center_y=SCREEN_HEIGHT // 2 - 75,
                                   width=225, height=100)
         btn_cancel.set_handler("on_click", self.cancel)
@@ -415,8 +461,14 @@ class NewGameView(arcade.View):
     def on_draw(self):
         arcade.start_render()
         self.background.draw()
-        arcade.draw_text("Если вы начнёте новую игру,\nто потеряете весь текущий прогресс!",
+        arcade.draw_text(database.get_data("dictionary",
+                                           language,
+                                           "russian = 'Если вы начнёте новую игру,'")[0][0],
                          start_x=125, start_y=520, color=arcade.color.RED, font_size=30)
+        arcade.draw_text(database.get_data("dictionary",
+                                           language,
+                                           "russian = 'то потеряете весь текущий прогресс!'")[0][0],
+                         start_x=125, start_y=487, color=arcade.color.RED, font_size=30)
         self.cursor.draw()
 
 
@@ -461,7 +513,11 @@ class LevelsMenuView(arcade.View):
         btn_right.set_handler("on_click", self.right)
         self.ui_manager.add_ui_element(btn_right)
 
-        btn_play = UIFlatButton("Играть", center_x=SCREEN_WIDTH // 2, center_y=SCREEN_HEIGHT // 2,
+        btn_play = UIFlatButton(database.get_data("dictionary",
+                                                  language,
+                                                  "russian = 'Играть'")[0][0],
+                                center_x=SCREEN_WIDTH // 2,
+                                center_y=SCREEN_HEIGHT // 2,
                                 height=120, width=280)
         btn_play.set_handler("on_click", self.play)
         btn_play.set_style_attrs(
@@ -554,9 +610,14 @@ class LevelsMenuView(arcade.View):
         arcade.draw_text(all_levels[self.num_level][1], start_x=SCREEN_WIDTH // 2, start_y=SCREEN_HEIGHT - 200,
                          anchor_x="center", color=arcade.color.ORANGE, font_size=44, font_name="")
         count = all_levels[self.num_level][4].count("-")
-        text = f"Собрано монет на уровне: {count}"
+        textt = database.get_data("dictionary",
+                                  language,
+                                  "russian = 'Собрано монет на уровне:'")[0][0]
+        text = f"{textt} {count}"
         if count == 3:
-            text = "На уровне уже собраны все монеты"
+            text = database.get_data("dictionary",
+                                     language,
+                                     "russian = 'На уровне уже собраны все монеты'")[0][0]
         arcade.draw_text(text=text,
                          start_x=SCREEN_WIDTH // 2,
                          start_y=SCREEN_HEIGHT - 260,
@@ -608,6 +669,9 @@ class GameView(arcade.View):
         self.win_sound = WIN_SOUND
         self.count_coin = 0
         self.time_after_hit = 0.7
+        self.text = database.get_data("dictionary",
+                                      language,
+                                      "russian = 'Монет собрано:'")[0][0]
         self.setup()
 
     def setup(self):
@@ -794,7 +858,7 @@ class GameView(arcade.View):
     def on_draw(self):
         arcade.start_render()
         self.all_sprites.draw()
-        arcade.draw_text(f"Монет собрано: {self.count_coin}",
+        arcade.draw_text(f"{self.text} {self.count_coin}",
                          start_x=25, start_y=SCREEN_HEIGHT - 40,
                          color=arcade.color.ORANGE, font_size=24)
 
@@ -804,6 +868,21 @@ class PauseView(arcade.View):
         super().__init__()
         self.game_view = game_view
         self.data_level = data_level
+        self.text_1 = database.get_data("dictionary",
+                                        language,
+                                        "russian = 'ПАУЗА'")[0][0]
+        self.text_2 = database.get_data("dictionary",
+                                        language,
+                                        "russian = 'Нажмите Enter, чтобы вернуться в меню.'")[0][0]
+        self.text_3 = database.get_data("dictionary",
+                                        language,
+                                        "russian = 'Весь прогресс будет потерян!'")[0][0]
+        self.text_4 = database.get_data("dictionary",
+                                        language,
+                                        "russian = 'Нажмите Esc, чтобы вернуться в игру.'")[0][0]
+        self.text_5 = database.get_data("dictionary",
+                                        language,
+                                        "russian = 'Нажмите R, чтобы перезапустить уровень.'")[0][0]
 
     def on_show(self):
         arcade.set_viewport(0, SCREEN_WIDTH - 1, 0, SCREEN_HEIGHT - 1)
@@ -812,27 +891,35 @@ class PauseView(arcade.View):
         arcade.start_render()
 
         self.game_view.all_sprites.draw()
-        arcade.draw_text(f"Монет собрано: {self.game_view.count_coin}",
+        arcade.draw_text(f"{self.game_view.text} {self.game_view.count_coin}",
                          start_x=25, start_y=SCREEN_HEIGHT - 40,
                          color=arcade.color.ORANGE, font_size=24)
 
         arcade.draw_lrtb_rectangle_filled(0, SCREEN_WIDTH, SCREEN_HEIGHT, 0,
                                           arcade.color.BABY_BLUE + (175,))
-        arcade.draw_text("ПАУЗА", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 150,
+        arcade.draw_text(self.text_1,
+                         SCREEN_WIDTH / 2,
+                         SCREEN_HEIGHT / 2 + 150,
                          arcade.color.BLACK, font_size=50, anchor_x="center")
-        arcade.draw_text("Нажмите Enter, чтобы вернуться в меню.\nВесь прогресс будет потерян!",
+        arcade.draw_text(self.text_2,
                          SCREEN_WIDTH / 2,
                          SCREEN_HEIGHT / 2,
                          arcade.color.BLACK,
                          font_size=24,
                          anchor_x="center")
-        arcade.draw_text("Нажмите Esc, чтобы вернуться в игру.",
+        arcade.draw_text(self.text_3,
+                         SCREEN_WIDTH / 2,
+                         SCREEN_HEIGHT / 2 - 30,
+                         arcade.color.BLACK,
+                         font_size=24,
+                         anchor_x="center")
+        arcade.draw_text(self.text_4,
                          SCREEN_WIDTH / 2,
                          SCREEN_HEIGHT / 2 - 80,
                          arcade.color.BLACK,
                          font_size=24,
                          anchor_x="center")
-        arcade.draw_text("Нажмите R, чтобы перезапустить уровень.",
+        arcade.draw_text(self.text_5,
                          SCREEN_WIDTH / 2,
                          SCREEN_HEIGHT / 2 - 160,
                          arcade.color.BLACK,
@@ -857,6 +944,15 @@ class GameEndView(arcade.View):
         super().__init__()
         self.game_view = game_view
         self.data_level = data_level
+        self.text_1 = database.get_data("dictionary",
+                                        language,
+                                        "russian = 'ПРОИГРЫШ'")[0][0]
+        self.text_2 = database.get_data("dictionary",
+                                        language,
+                                        "russian = 'Нажмите Enter, чтобы вернуться в меню.'")[0][0]
+        self.text_3 = database.get_data("dictionary",
+                                        language,
+                                        "russian = 'Нажмите R, чтобы перезапустить уровень.'")[0][0]
 
     def on_show(self):
         arcade.set_viewport(0, SCREEN_WIDTH - 1, 0, SCREEN_HEIGHT - 1)
@@ -866,15 +962,17 @@ class GameEndView(arcade.View):
 
         arcade.draw_lrtb_rectangle_filled(0, SCREEN_WIDTH, SCREEN_HEIGHT, 0,
                                           arcade.color.RED_DEVIL)
-        arcade.draw_text("ПРОИГРЫШ", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 150,
+        arcade.draw_text(self.text_1,
+                         SCREEN_WIDTH / 2,
+                         SCREEN_HEIGHT / 2 + 150,
                          arcade.color.BLACK, font_size=50, anchor_x="center")
-        arcade.draw_text("Нажмите Enter, чтобы вернуться в меню.",
+        arcade.draw_text(self.text_2,
                          SCREEN_WIDTH / 2,
                          SCREEN_HEIGHT / 2,
                          arcade.color.BLACK,
                          font_size=24,
                          anchor_x="center")
-        arcade.draw_text("Нажмите R, чтобы перезапустить уровень.",
+        arcade.draw_text(self.text_3,
                          SCREEN_WIDTH / 2,
                          SCREEN_HEIGHT / 2 - 80,
                          arcade.color.BLACK,
@@ -897,6 +995,27 @@ class GameWinView(arcade.View):
         super().__init__()
         self.game_view = game_view
         self.data_level = data_level
+        self.text_1 = database.get_data("dictionary",
+                                        language,
+                                        "russian = 'Вы собрали'")[0][0]
+        self.text_2 = database.get_data("dictionary",
+                                        language,
+                                        "russian = 'монет'")[0][0]
+        self.text_3 = database.get_data("dictionary",
+                                        language,
+                                        "russian = 'ПОБЕДА'")[0][0]
+        self.text_4 = database.get_data("dictionary",
+                                        language,
+                                        "russian = 'Нажмите Enter, чтобы вернуться в меню.'")[0][0]
+        self.text_5 = database.get_data("dictionary",
+                                        language,
+                                        "russian = 'Нажмите R, чтобы перезапустить уровень.'")[0][0]
+        self.text_6 = database.get_data("dictionary",
+                                        language,
+                                        "russian = 'Уровень пройден на уровне сложности -'")[0][0]
+        self.text_7 = database.get_data("dictionary",
+                                        language,
+                                        f"russian = '{level.capitalize()}'")[0][0]
 
     def on_show(self):
         arcade.set_viewport(0, SCREEN_WIDTH - 1, 0, SCREEN_HEIGHT - 1)
@@ -906,27 +1025,29 @@ class GameWinView(arcade.View):
 
         arcade.draw_lrtb_rectangle_filled(0, SCREEN_WIDTH, SCREEN_HEIGHT, 0,
                                           arcade.color.GREEN)
-        arcade.draw_text("ПОБЕДА", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 150,
+        arcade.draw_text(self.text_3,
+                         SCREEN_WIDTH / 2,
+                         SCREEN_HEIGHT / 2 + 150,
                          arcade.color.BLACK, font_size=50, anchor_x="center")
-        arcade.draw_text(f"Вы собрали {self.game_view.count_coin} монет!",
+        arcade.draw_text(f"{self.text_1} {self.game_view.count_coin} {self.text_2}!",
                          SCREEN_WIDTH / 2,
                          SCREEN_HEIGHT / 2,
                          arcade.color.BLACK,
                          font_size=24,
                          anchor_x="center")
-        arcade.draw_text(f'Уровень пройден на уровне сложности - "{level}"',
+        arcade.draw_text(f'{self.text_6} "{self.text_7.lower()}"',
                          SCREEN_WIDTH / 2,
                          SCREEN_HEIGHT / 2 - 80,
                          arcade.color.BLACK,
                          font_size=24,
                          anchor_x="center")
-        arcade.draw_text("Нажмите Enter, чтобы вернуться в меню.",
+        arcade.draw_text(self.text_4,
                          SCREEN_WIDTH / 2,
                          SCREEN_HEIGHT / 2 - 160,
                          arcade.color.BLACK,
                          font_size=24,
                          anchor_x="center")
-        arcade.draw_text("Нажмите R, чтобы перезапустить уровень.",
+        arcade.draw_text(self.text_5,
                          SCREEN_WIDTH / 2,
                          SCREEN_HEIGHT / 2 - 240,
                          arcade.color.BLACK,
@@ -954,11 +1075,36 @@ class InstructionView(arcade.View):
         self.setup()
         self.cursor = CURSOR
         self.btn_instruction = SETTINGS_SOUND
+        self.text_1 = database.get_data("dictionary",
+                                        language,
+                                        "russian = '- игра с множеством уровней,'")[0][0]
+        self.text_2 = database.get_data("dictionary",
+                                        language,
+                                        "russian = 'для прохождения которых нужно выйти из лабиринта.'")[0][0]
+        text = 'На один уровень у вас есть 3 "сердчека" - жизни.'
+        self.text_3 = database.get_data("dictionary",
+                                        language,
+                                        f"russian = '{text}'")[0][0]
+        self.text_4 = database.get_data("dictionary",
+                                        language,
+                                        "russian = 'В зависимости от уровня сложности'")[0][0]
+        self.text_5 = database.get_data("dictionary",
+                                        language,
+                                        "russian = 'противники в лабиринте наносят разный урон.'")[0][0]
+        text_2 = 'Если "сердечки" закончатся -'
+        self.text_6 = database.get_data("dictionary",
+                                        language,
+                                        f"russian = '{text_2}'")[0][0]
+        self.text_7 = database.get_data("dictionary",
+                                        language,
+                                        "russian = 'вы потеряете весь прогресс на данном уровне.'")[0][0]
 
     def setup(self):
         self.ui_manager.purge_ui_elements()
 
-        text = UILabel("Об игре",
+        text = UILabel(database.get_data("dictionary",
+                                         language,
+                                         "russian = 'Об игре'")[0][0],
                        center_x=SCREEN_WIDTH // 2,
                        center_y=SCREEN_HEIGHT - 100)
         text.set_style_attrs(font_color=arcade.color.BABY_BLUE, font_size=44)
@@ -1006,23 +1152,38 @@ class InstructionView(arcade.View):
                          color=arcade.color.WHITE,
                          font_size=60,
                          bold=True)
-        arcade.draw_text(f"{SCREEN_TITLE} - игра с множеством"
-                         f" уровней,\nдля прохождения"
-                         f" которых нужно выйти из лабиринта.",
+        arcade.draw_text(f"{SCREEN_TITLE} {self.text_1}",
                          SCREEN_WIDTH // 2, 530,
                          color=arcade.color.BABY_BLUE,
                          font_size=24,
                          anchor_x="center")
-        arcade.draw_text('На один уровень у вас есть 3 "сердчека" - жизни.'
-                         "\nВ зависимости от уровня сложности"
-                         "\nпротивники в лабиринте наносят разный урон.",
+        arcade.draw_text(self.text_2,
+                         SCREEN_WIDTH // 2, 500,
+                         color=arcade.color.BABY_BLUE,
+                         font_size=24,
+                         anchor_x="center")
+        arcade.draw_text(self.text_3,
                          SCREEN_WIDTH // 2 + 80, 400,
                          color=arcade.color.BABY_BLUE,
                          font_size=24,
                          anchor_x="center")
-        arcade.draw_text('Если "сердечки" закончатся - \n'
-                         'вы потеряете весь прогресc на данном уровне.',
+        arcade.draw_text(self.text_4,
+                         SCREEN_WIDTH // 2 + 80, 370,
+                         color=arcade.color.BABY_BLUE,
+                         font_size=24,
+                         anchor_x="center")
+        arcade.draw_text(self.text_5,
+                         SCREEN_WIDTH // 2 + 80, 340,
+                         color=arcade.color.BABY_BLUE,
+                         font_size=24,
+                         anchor_x="center")
+        arcade.draw_text(self.text_6,
                          SCREEN_WIDTH // 2 - 50, 270,
+                         color=arcade.color.BABY_BLUE,
+                         font_size=24,
+                         anchor_x="center")
+        arcade.draw_text(self.text_7,
+                         SCREEN_WIDTH // 2 - 50, 240,
                          color=arcade.color.BABY_BLUE,
                          font_size=24,
                          anchor_x="center")
