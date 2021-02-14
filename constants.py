@@ -50,3 +50,6 @@ RUSSIA_IMAGE = "images/russia.png"
 RUSSIA_IMAGE_2 = "images/russia2.png"
 ENGLISH_IMAGE = "images/english.png"
 ENGLISH_IMAGE_2 = "images/english2.png"
+SHOP_IMAGE = "images/shop.png"
+SHOP_IMAGE_2 = "images/shop2.png"
+PERSON_SOUND = Sound(":resources:sounds/upgrade1.wav")

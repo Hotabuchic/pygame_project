@@ -16,15 +16,8 @@ def think_stars(data):
     return count
 
 
-def think_coins(data):
-    count = 0
-    for i in data:
-        count += i[0].count("-")
-    return count
-
-
 database = DataBase()
-count_coins = think_coins(database.get_data("levels", "all_coins"))
+count_coins = database.get_data("player_info", "count_coins")[0][0]
 count_stars = think_stars(database.get_data("levels", "completed"))
 level = database.get_data("player_info", "current_level")[0][0]
 all_levels = database.get_data("levels")
@@ -32,6 +25,7 @@ player = database.get_data("player_info, persons",
                            "persons.path",
                            "player_info.person_id = persons.id")[0][0]
 language = database.get_data("player_info", "language")[0][0]
+all_person = database.get_data("persons")
 
 
 class MainMenuView(arcade.View):
@@ -138,6 +132,13 @@ class MainMenuView(arcade.View):
         btn_instruction.set_handler("on_click", self.instruction)
         self.ui_manager.add_ui_element(btn_instruction)
 
+        btn_shop = UIImageButton(center_x=SCREEN_WIDTH - 50,
+                                 center_y=45,
+                                 normal_texture=arcade.load_texture(SHOP_IMAGE),
+                                 press_texture=arcade.load_texture(SHOP_IMAGE_2))
+        btn_shop.set_handler("on_click", self.shop)
+        self.ui_manager.add_ui_element(btn_shop)
+
     def new_game(self):
         self.btn.play()
         self.ui_manager.purge_ui_elements()
@@ -165,6 +166,12 @@ class MainMenuView(arcade.View):
         self.btn_settings.play()
         self.ui_manager.purge_ui_elements()
         view = InstructionView()
+        self.window.show_view(view)
+
+    def shop(self):
+        self.btn.play()
+        self.ui_manager.purge_ui_elements()
+        view = ShopView()
         self.window.show_view(view)
 
     def on_show(self):
@@ -332,12 +339,14 @@ class SettingsView(arcade.View):
 
     def russia(self):
         global language
+        self.btn.play()
         database.change_data("player_info", "language = 'russian'")
         language = database.get_data("player_info", "language")[0][0]
         self.setup()
 
     def english(self):
         global language
+        self.btn.play()
         database.change_data("player_info", "language = 'english'")
         language = database.get_data("player_info", "language")[0][0]
         self.setup()
@@ -396,7 +405,7 @@ class NewGameView(arcade.View):
                                          "russian = 'Вы точно хотите начать новую игру?'")[0][0],
                        center_x=SCREEN_WIDTH // 2,
                        center_y=SCREEN_HEIGHT - 100)
-        text.set_style_attrs(font_color=arcade.color.BABY_BLUE, font_size=34)
+        text.set_style_attrs(font_color=arcade.color.BABY_BLUE, font_size=30)
         self.ui_manager.add_ui_element(text)
 
         btn_ok = UIFlatButton(database.get_data("dictionary",
@@ -440,12 +449,18 @@ class NewGameView(arcade.View):
         self.ui_manager.add_ui_element(btn_cancel)
 
     def ok(self):
-        global count_coins, count_stars, all_levels
+        global count_coins, count_stars, all_levels, all_person, player
         self.btn_2.play(1.25)
         database.change_data("levels", "completed = 'False', all_coins = '+++'")
-        count_coins = think_coins(database.get_data("levels", "all_coins"))
+        database.change_data("persons", "received = 'False'", "id > 1")
+        database.change_data("player_info", "person_id = 1, current_level = 'лёгкий', count_coins = 0")
+        count_coins = database.get_data("player_info", "count_coins")[0][0]
         count_stars = think_stars(database.get_data("levels", "completed"))
         all_levels = database.get_data("levels")
+        player = database.get_data("player_info, persons",
+                                   "persons.path",
+                                   "player_info.person_id = persons.id")[0][0]
+        all_person = database.get_data("persons")
         self.cancel()
 
     def cancel(self):
@@ -748,22 +763,22 @@ class GameView(arcade.View):
         if symbol == arcade.key.ESCAPE:
             view = PauseView(self, self.data_level)
             self.window.show_view(view)
-        if symbol == arcade.key.LEFT:
+        if symbol == arcade.key.LEFT or symbol == arcade.key.A:
             self.player.center_x -= 50
             if self.player.collides_with_list(self.walls) or self.player.left <= 0:
                 self.player.center_x += 50
             self.player.index(2)
-        if symbol == arcade.key.RIGHT:
+        if symbol == arcade.key.RIGHT or symbol == arcade.key.D:
             self.player.center_x += 50
             if self.player.collides_with_list(self.walls) or self.player.right >= SCREEN_WIDTH:
                 self.player.center_x -= 50
             self.player.index(1)
-        if symbol == arcade.key.UP:
+        if symbol == arcade.key.UP or symbol == arcade.key.W:
             self.player.center_y += 50
             if self.player.collides_with_list(self.walls) or self.player.top >= SCREEN_HEIGHT - 50:
                 self.player.center_y -= 50
             self.player.index(3)
-        if symbol == arcade.key.DOWN:
+        if symbol == arcade.key.DOWN or symbol == arcade.key.S:
             self.player.center_y -= 50
             if self.player.collides_with_list(self.walls) or self.player.bottom <= 0:
                 self.player.center_y += 50
@@ -786,13 +801,15 @@ class GameView(arcade.View):
                                      f"completed = '{level}'",
                                      data_criterion=f"id = {self.id}")
                 if len(self.get_coin) > self.level_coins.count("-"):
+                    x = len(self.get_coin) - self.level_coins.count("-")
                     for i in self.get_coin:
                         self.level_coins[i - 1] = "-"
                     database.change_data("levels",
                                          f"all_coins = '{''.join(self.level_coins)}'",
                                          data_criterion=f"id = {self.id}")
+                    count_coins += x
+                    database.change_data("player_info", f"count_coins = {count_coins}")
             all_levels = database.get_data("levels")
-            count_coins = think_coins(database.get_data("levels", "all_coins"))
             count_stars = think_stars(database.get_data("levels", "completed"))
             self.data_level = all_levels[int(self.id) - 1]
             self.off_music()
@@ -1187,4 +1204,203 @@ class InstructionView(arcade.View):
                          color=arcade.color.BABY_BLUE,
                          font_size=24,
                          anchor_x="center")
+        self.cursor.draw()
+
+
+class ShopView(arcade.View):
+    def __init__(self):
+        super(ShopView, self).__init__()
+        self.background = None
+        self.coin = None
+        self.star = None
+        self.ui_manager = UIManager(self.window)
+        self.cursor = CURSOR
+        self.btn_shop = BUTTON_SOUND
+        self.btn = BUTTON_SOUND_2
+        self.person = PERSON_SOUND
+        self.num_person = 0
+        self.path = ":resources:images/animated_characters/"
+        self.person_image = Sprite(self.path + all_person[self.num_person][2]
+                                   + "_idle.png",
+                                   center_x=SCREEN_WIDTH // 2,
+                                   center_y=SCREEN_HEIGHT // 2 + 50, scale=3)
+        self.setup()
+
+    def setup(self):
+        self.ui_manager.purge_ui_elements()
+
+        btn_left = UIImageButton(center_x=50, center_y=SCREEN_HEIGHT // 2,
+                                 normal_texture=arcade.load_texture(ARROW, flipped_horizontally=True),
+                                 press_texture=arcade.load_texture(ARROW2, flipped_horizontally=True))
+        btn_left.set_handler("on_click", self.left)
+        self.ui_manager.add_ui_element(btn_left)
+
+        btn_right = UIImageButton(center_x=SCREEN_WIDTH - 50, center_y=SCREEN_HEIGHT // 2,
+                                  normal_texture=arcade.load_texture(ARROW),
+                                  press_texture=arcade.load_texture(ARROW2))
+        btn_right.set_handler("on_click", self.right)
+        self.ui_manager.add_ui_element(btn_right)
+
+        btn_shop = UIImageButton(center_x=SCREEN_WIDTH - 50,
+                                 center_y=45,
+                                 normal_texture=arcade.load_texture(SHOP_IMAGE),
+                                 press_texture=arcade.load_texture(SHOP_IMAGE_2))
+        btn_shop.set_handler("on_click", self.shop)
+        self.ui_manager.add_ui_element(btn_shop)
+
+        text = UILabel(database.get_data("dictionary",
+                                         language,
+                                         f"russian = '{all_person[self.num_person][1]}'")[0][0],
+                       center_x=SCREEN_WIDTH // 2,
+                       center_y=SCREEN_HEIGHT - 120)
+        text.set_style_attrs(font_color=arcade.color.BABY_BLUE, font_size=54)
+        self.ui_manager.add_ui_element(text)
+
+        if player == all_person[self.num_person][2]:
+            text = UILabel(database.get_data("dictionary",
+                                             language,
+                                             "russian = 'Выбрано'")[0][0],
+                           center_x=SCREEN_WIDTH // 2,
+                           center_y=SCREEN_HEIGHT // 2 - 270)
+            text.set_style_attrs(font_color=arcade.color.WHITE, font_size=34)
+            self.ui_manager.add_ui_element(text)
+        else:
+            if all_person[self.num_person][4] == "True":
+                btn_select = UIFlatButton(database.get_data("dictionary",
+                                                            language,
+                                                            "russian = 'Выбрать'")[0][0],
+                                          center_x=SCREEN_WIDTH // 2,
+                                          center_y=SCREEN_HEIGHT // 2 - 270,
+                                          height=120, width=250)
+                btn_select.set_handler("on_click", self.select)
+                btn_select.set_style_attrs(
+                    font_color=arcade.color.WHITE,
+                    font_color_hover=arcade.color.WHITE,
+                    font_color_press=arcade.color.WHITE,
+                    bg_color=(51, 139, 57),
+                    bg_color_hover=(51, 139, 57),
+                    bg_color_press=(28, 71, 32),
+                    border_color=(51, 139, 57),
+                    border_color_hover=arcade.color.WHITE,
+                    border_color_press=arcade.color.WHITE,
+                    font_size=34
+                )
+                self.ui_manager.add_ui_element(btn_select)
+            elif all_person[self.num_person][4] == "False":
+                textt = database.get_data("dictionary",
+                                          language,
+                                          "russian = 'Этот персонаж "
+                                          "стоит'")[0][0] \
+                        + " " + str(all_person[self.num_person][3]) + " " \
+                        + database.get_data("dictionary",
+                                            language,
+                                            "russian = 'монет'")[0][0]
+                text = UILabel(textt,
+                               center_x=SCREEN_WIDTH // 2,
+                               center_y=SCREEN_HEIGHT // 2 - 165)
+                text.set_style_attrs(font_color=arcade.color.WHITE, font_size=34)
+                self.ui_manager.add_ui_element(text)
+
+                btn_buy = UIFlatButton(database.get_data("dictionary",
+                                                         language,
+                                                         "russian = 'Купить'")[0][0],
+                                       center_x=SCREEN_WIDTH // 2,
+                                       center_y=SCREEN_HEIGHT // 2 - 270,
+                                       height=120, width=250)
+                btn_buy.set_handler("on_click", self.buy)
+                btn_buy.set_style_attrs(
+                    font_color=arcade.color.WHITE,
+                    font_color_hover=arcade.color.WHITE,
+                    font_color_press=arcade.color.WHITE,
+                    bg_color=(135, 21, 25),
+                    bg_color_hover=(135, 21, 25),
+                    bg_color_press=(122, 21, 24),
+                    border_color=(135, 21, 25),
+                    border_color_hover=arcade.color.WHITE,
+                    border_color_press=arcade.color.WHITE,
+                    font_size=34
+                )
+                self.ui_manager.add_ui_element(btn_buy)
+
+    def select(self):
+        global player
+        self.person.play()
+        database.change_data("player_info", f"person_id = {all_person[self.num_person][0]}")
+        player = database.get_data("player_info, persons",
+                                   "persons.path",
+                                   "player_info.person_id = persons.id")[0][0]
+        self.setup()
+
+    def buy(self):
+        global count_coins, player, all_person
+        if count_coins >= all_person[self.num_person][3]:
+            self.person.play()
+            count_coins -= all_person[self.num_person][3]
+            database.change_data("player_info", f"count_coins = {count_coins}")
+            database.change_data("persons", "received = 'True'",
+                                 f"id = {all_person[self.num_person][0]}")
+            database.change_data("player_info",
+                                 f"person_id = {all_person[self.num_person][0]}")
+            all_person = database.get_data("persons")
+            player = database.get_data("player_info, persons",
+                                       "persons.path",
+                                       "player_info.person_id = persons.id")[0][0]
+            self.setup()
+
+    def shop(self):
+        self.btn_shop.play()
+        self.ui_manager.purge_ui_elements()
+        view = MainMenuView()
+        self.window.show_view(view)
+
+    def left(self):
+        self.btn.play()
+        if self.num_person == 0:
+            self.num_person = len(all_person) - 1
+        else:
+            self.num_person -= 1
+        self.setup()
+        self.person_image = Sprite(self.path + all_person[self.num_person][2]
+                                   + "_idle.png",
+                                   center_x=SCREEN_WIDTH // 2,
+                                   center_y=SCREEN_HEIGHT // 2 + 50, scale=3)
+
+    def right(self):
+        self.btn.play()
+        if self.num_person == len(all_person) - 1:
+            self.num_person = 0
+        else:
+            self.num_person += 1
+        self.setup()
+        self.person_image = Sprite(self.path + all_person[self.num_person][2]
+                                   + "_idle.png",
+                                   center_x=SCREEN_WIDTH // 2,
+                                   center_y=SCREEN_HEIGHT // 2 + 50, scale=3)
+
+    def on_key_press(self, symbol: int, modifiers: int):
+        if symbol == arcade.key.LEFT:
+            self.left()
+        elif symbol == arcade.key.RIGHT:
+            self.right()
+
+    def on_mouse_motion(self, x: float, y: float, dx: float, dy: float):
+        self.cursor.center_x = x
+        self.cursor.center_y = y
+
+    def on_show(self):
+        arcade.set_viewport(0, SCREEN_WIDTH - 1, 0, SCREEN_HEIGHT - 1)
+        self.background = BACKGROUND2
+        self.coin = COIN
+        self.star = STAR
+
+    def on_draw(self):
+        arcade.start_render()
+        self.background.draw()
+        self.coin.draw()
+        self.star.draw()
+        arcade.draw_text(str(count_coins), SCREEN_WIDTH - 80, SCREEN_HEIGHT - 82, anchor_x="right",
+                         color=arcade.color.WHITE, font_size=60, bold=True)
+        arcade.draw_text(str(count_stars), SCREEN_WIDTH - 80, SCREEN_HEIGHT - 165, anchor_x="right",
+                         color=arcade.color.WHITE, font_size=60, bold=True)
+        self.person_image.draw()
         self.cursor.draw()
