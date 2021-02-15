@@ -603,6 +603,8 @@ class LevelsMenuView(arcade.View):
             self.left()
         elif symbol == arcade.key.RIGHT:
             self.right()
+        elif symbol == arcade.key.ENTER:
+            self.play()
 
     def on_show(self):
         arcade.set_viewport(0, SCREEN_WIDTH - 1, 0, SCREEN_HEIGHT - 1)
@@ -763,22 +765,22 @@ class GameView(arcade.View):
         if symbol == arcade.key.ESCAPE:
             view = PauseView(self, self.data_level)
             self.window.show_view(view)
-        if symbol == arcade.key.LEFT or symbol == arcade.key.A:
+        if symbol == arcade.key.LEFT:
             self.player.center_x -= 50
             if self.player.collides_with_list(self.walls) or self.player.left <= 0:
                 self.player.center_x += 50
             self.player.index(2)
-        if symbol == arcade.key.RIGHT or symbol == arcade.key.D:
+        if symbol == arcade.key.RIGHT:
             self.player.center_x += 50
             if self.player.collides_with_list(self.walls) or self.player.right >= SCREEN_WIDTH:
                 self.player.center_x -= 50
             self.player.index(1)
-        if symbol == arcade.key.UP or symbol == arcade.key.W:
+        if symbol == arcade.key.UP:
             self.player.center_y += 50
             if self.player.collides_with_list(self.walls) or self.player.top >= SCREEN_HEIGHT - 50:
                 self.player.center_y -= 50
             self.player.index(3)
-        if symbol == arcade.key.DOWN or symbol == arcade.key.S:
+        if symbol == arcade.key.DOWN:
             self.player.center_y -= 50
             if self.player.collides_with_list(self.walls) or self.player.bottom <= 0:
                 self.player.center_y += 50
