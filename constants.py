@@ -53,3 +53,6 @@ ENGLISH_IMAGE_2 = "images/english2.png"
 SHOP_IMAGE = "images/shop.png"
 SHOP_IMAGE_2 = "images/shop2.png"
 PERSON_SOUND = Sound(":resources:sounds/upgrade1.wav")
+SCALING_LOGO = 2.1
+LOGO = Sprite("images/logo.png", SCALING_LOGO,
+              center_x=SCREEN_WIDTH // 2, center_y=SCREEN_HEIGHT // 2)

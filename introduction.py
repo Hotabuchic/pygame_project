@@ -23,21 +23,17 @@ class IntroductionView(arcade.View):
 
     def on_show(self):
         arcade.set_viewport(0, SCREEN_WIDTH - 1, 0, SCREEN_HEIGHT - 1)
-        self.background = BACKGROUND
+        self.background = LOGO
 
     def on_draw(self):
         arcade.start_render()
         self.background.draw()
-        arcade.draw_text(SCREEN_TITLE, SCREEN_WIDTH // 2,
-                         SCREEN_HEIGHT // 2,
-                         arcade.color.BABY_BLUE,
-                         anchor_x="center",
-                         font_size=50)
         arcade.draw_text(database.get_data("dictionary",
                                            language,
                                            "russian = 'Нажмите любую кнопку чтобы продолжить'")[0][0],
                          SCREEN_WIDTH // 2,
-                         SCREEN_HEIGHT // 2 - 80, arcade.color.RED,
+                         100,
+                         arcade.color.RED,
                          anchor_x="center",
                          font_size=20)
         self.cursor.draw()
