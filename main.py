@@ -1,4 +1,4 @@
-import arcade
+from arcade import Window, run
 from pygame import init, quit
 
 from constants import *
@@ -9,10 +9,10 @@ quit()
 
 
 def main():
-    window = arcade.Window(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
+    window = Window(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
     view = IntroductionView()
     window.show_view(view)
-    arcade.run()
+    run()
 
 
 if __name__ == '__main__':

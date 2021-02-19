@@ -1,4 +1,4 @@
-import arcade
+from arcade import View, set_viewport, start_render, draw_text, color
 
 from constants import *
 from databse import DataBase
@@ -8,7 +8,7 @@ database = DataBase()
 language = database.get_data("player_info", "language")[0][0]
 
 
-class IntroductionView(arcade.View):
+class IntroductionView(View):
     def __init__(self):
         super(IntroductionView, self).__init__()
         self.window.set_mouse_visible(False)
@@ -22,20 +22,20 @@ class IntroductionView(arcade.View):
         self.cursor.center_y = y
 
     def on_show(self):
-        arcade.set_viewport(0, SCREEN_WIDTH - 1, 0, SCREEN_HEIGHT - 1)
+        set_viewport(0, SCREEN_WIDTH - 1, 0, SCREEN_HEIGHT - 1)
         self.background = LOGO
 
     def on_draw(self):
-        arcade.start_render()
+        start_render()
         self.background.draw()
-        arcade.draw_text(database.get_data("dictionary",
-                                           language,
-                                           "russian = 'Нажмите любую кнопку чтобы продолжить'")[0][0],
-                         SCREEN_WIDTH // 2,
-                         100,
-                         arcade.color.RED,
-                         anchor_x="center",
-                         font_size=20)
+        draw_text(database.get_data("dictionary",
+                                    language,
+                                    "russian = 'Нажмите любую кнопку чтобы продолжить'")[0][0],
+                  SCREEN_WIDTH // 2,
+                  100,
+                  color.RED,
+                  anchor_x="center",
+                  font_size=20)
         self.cursor.draw()
 
     def on_key_press(self, symbol: int, modifiers: int):

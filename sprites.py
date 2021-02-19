@@ -1,7 +1,7 @@
-import arcade
+from arcade import Sprite, load_texture
 
 
-class Coin(arcade.Sprite):
+class Coin(Sprite):
     def __init__(self, texture_list):
         super(Coin, self).__init__(hit_box_algorithm="Detailed")
         self.textures = texture_list
@@ -19,7 +19,7 @@ class Coin(arcade.Sprite):
                 self.texture_index = 0
 
 
-class Enemy(arcade.Sprite):
+class Enemy(Sprite):
     def __init__(self, texture_list, mirrored, speed):
         super(Enemy, self).__init__(hit_box_algorithm="Detailed")
         self.mirrored = mirrored
@@ -43,7 +43,7 @@ class Enemy(arcade.Sprite):
         return self.mirrored, self.center_x, self.center_y, self.speed
 
 
-class VerticalEnemy(arcade.Sprite):
+class VerticalEnemy(Sprite):
     def __init__(self, image, speed_y):
         super(VerticalEnemy, self).__init__(filename=image)
         self.speed_y = speed_y
@@ -55,15 +55,15 @@ class VerticalEnemy(arcade.Sprite):
         self.speed_y = -self.speed_y
 
 
-class Player(arcade.Sprite):
+class Player(Sprite):
     def __init__(self, path_to_textures):
         super(Player, self).__init__(hit_box_algorithm="Detailed")
         self.path_to_textures = ":resources:images/animated_characters/" + path_to_textures
-        self.textures = [arcade.load_texture(f"{self.path_to_textures}_idle.png"),
-                         arcade.load_texture(f"{self.path_to_textures}_walk5.png"),
-                         arcade.load_texture(f"{self.path_to_textures}_walk5.png",
-                                             mirrored=True),
-                         arcade.load_texture(f"{self.path_to_textures}_climb0.png")]
+        self.textures = [load_texture(f"{self.path_to_textures}_idle.png"),
+                         load_texture(f"{self.path_to_textures}_walk5.png"),
+                         load_texture(f"{self.path_to_textures}_walk5.png",
+                                      mirrored=True),
+                         load_texture(f"{self.path_to_textures}_climb0.png")]
         self.texture_index = 0
         self.set_texture(self.texture_index)
 

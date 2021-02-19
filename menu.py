@@ -1,5 +1,8 @@
 from time import sleep
 
+from arcade import View, color, \
+    draw_text, key, set_viewport, \
+    start_render, close_window, SpriteList, draw_lrtb_rectangle_filled
 from arcade.gui import UIManager, UILabel, UIFlatButton, UIImageButton
 
 from constants import *
@@ -28,7 +31,7 @@ language = database.get_data("player_info", "language")[0][0]
 all_person = database.get_data("persons")
 
 
-class MainMenuView(arcade.View):
+class MainMenuView(View):
     def __init__(self):
         super(MainMenuView, self).__init__()
         self.background = None
@@ -53,7 +56,7 @@ class MainMenuView(arcade.View):
                                          "russian = 'Главное меню'")[0][0],
                        center_x=SCREEN_WIDTH // 2,
                        center_y=SCREEN_HEIGHT - 100)
-        text.set_style_attrs(font_color=arcade.color.BABY_BLUE, font_size=44)
+        text.set_style_attrs(font_color=color.BABY_BLUE, font_size=44)
         self.ui_manager.add_ui_element(text)
 
         btn_new = UIFlatButton(database.get_data("dictionary",
@@ -63,15 +66,15 @@ class MainMenuView(arcade.View):
                                center_y=550,
                                height=100, width=300)
         btn_new.set_style_attrs(
-            font_color=arcade.color.WHITE,
-            font_color_hover=arcade.color.WHITE,
-            font_color_press=arcade.color.WHITE,
+            font_color=color.WHITE,
+            font_color_hover=color.WHITE,
+            font_color_press=color.WHITE,
             bg_color=(255, 165, 10),
             bg_color_hover=(255, 165, 10),
             bg_color_press=(230, 145, 0),
             border_color=(255, 165, 10),
-            border_color_hover=arcade.color.WHITE,
-            border_color_press=arcade.color.WHITE,
+            border_color_hover=color.WHITE,
+            border_color_press=color.WHITE,
             font_size=22
         )
         btn_new.set_handler("on_click", self.new_game)
@@ -84,15 +87,15 @@ class MainMenuView(arcade.View):
                                   center_y=400,
                                   height=100, width=300)
         btn_resume.set_style_attrs(
-            font_color=arcade.color.WHITE,
-            font_color_hover=arcade.color.WHITE,
-            font_color_press=arcade.color.WHITE,
+            font_color=color.WHITE,
+            font_color_hover=color.WHITE,
+            font_color_press=color.WHITE,
             bg_color=(51, 139, 57),
             bg_color_hover=(51, 139, 57),
             bg_color_press=(28, 71, 32),
             border_color=(51, 139, 57),
-            border_color_hover=arcade.color.WHITE,
-            border_color_press=arcade.color.WHITE,
+            border_color_hover=color.WHITE,
+            border_color_press=color.WHITE,
             font_size=22
         )
         btn_resume.set_handler("on_click", self.resume)
@@ -105,37 +108,37 @@ class MainMenuView(arcade.View):
                                center_y=250,
                                height=100, width=300)
         btn_end.set_style_attrs(
-            font_color=arcade.color.WHITE,
-            font_color_hover=arcade.color.WHITE,
-            font_color_press=arcade.color.WHITE,
+            font_color=color.WHITE,
+            font_color_hover=color.WHITE,
+            font_color_press=color.WHITE,
             bg_color=(135, 21, 25),
             bg_color_hover=(135, 21, 25),
             bg_color_press=(122, 21, 24),
             border_color=(135, 21, 25),
-            border_color_hover=arcade.color.WHITE,
-            border_color_press=arcade.color.WHITE,
+            border_color_hover=color.WHITE,
+            border_color_press=color.WHITE,
             font_size=22
         )
         btn_end.set_handler("on_click", self.end)
         self.ui_manager.add_ui_element(btn_end)
 
         btn_settings = UIImageButton(center_x=35, center_y=SCREEN_HEIGHT - 35,
-                                     normal_texture=arcade.load_texture(SETTINGS),
-                                     press_texture=arcade.load_texture(SETTINGS2))
+                                     normal_texture=load_texture(SETTINGS),
+                                     press_texture=load_texture(SETTINGS2))
         btn_settings.set_handler("on_click", self.settings)
         self.ui_manager.add_ui_element(btn_settings)
 
         btn_instruction = UIImageButton(center_x=50,
                                         center_y=45,
-                                        normal_texture=arcade.load_texture(INSTRUCTION_IMAGE),
-                                        press_texture=arcade.load_texture(INSTRUCTION_IMAGE_2))
+                                        normal_texture=load_texture(INSTRUCTION_IMAGE),
+                                        press_texture=load_texture(INSTRUCTION_IMAGE_2))
         btn_instruction.set_handler("on_click", self.instruction)
         self.ui_manager.add_ui_element(btn_instruction)
 
         btn_shop = UIImageButton(center_x=SCREEN_WIDTH - 50,
                                  center_y=45,
-                                 normal_texture=arcade.load_texture(SHOP_IMAGE),
-                                 press_texture=arcade.load_texture(SHOP_IMAGE_2))
+                                 normal_texture=load_texture(SHOP_IMAGE),
+                                 press_texture=load_texture(SHOP_IMAGE_2))
         btn_shop.set_handler("on_click", self.shop)
         self.ui_manager.add_ui_element(btn_shop)
 
@@ -154,7 +157,7 @@ class MainMenuView(arcade.View):
     def end(self):
         self.btn_exit.play(1.7)
         sleep(0.9)
-        arcade.close_window()
+        close_window()
 
     def settings(self):
         self.btn_settings.play()
@@ -175,24 +178,24 @@ class MainMenuView(arcade.View):
         self.window.show_view(view)
 
     def on_show(self):
-        arcade.set_viewport(0, SCREEN_WIDTH - 1, 0, SCREEN_HEIGHT - 1)
+        set_viewport(0, SCREEN_WIDTH - 1, 0, SCREEN_HEIGHT - 1)
         self.background = BACKGROUND
         self.coin = COIN
         self.star = STAR
 
     def on_draw(self):
-        arcade.start_render()
+        start_render()
         self.background.draw()
         self.coin.draw()
         self.star.draw()
-        arcade.draw_text(str(count_coins), SCREEN_WIDTH - 80, SCREEN_HEIGHT - 82, anchor_x="right",
-                         color=arcade.color.WHITE, font_size=60, bold=True)
-        arcade.draw_text(str(count_stars), SCREEN_WIDTH - 80, SCREEN_HEIGHT - 165, anchor_x="right",
-                         color=arcade.color.WHITE, font_size=60, bold=True)
+        draw_text(str(count_coins), SCREEN_WIDTH - 80, SCREEN_HEIGHT - 82, anchor_x="right",
+                  color=color.WHITE, font_size=60, bold=True)
+        draw_text(str(count_stars), SCREEN_WIDTH - 80, SCREEN_HEIGHT - 165, anchor_x="right",
+                  color=color.WHITE, font_size=60, bold=True)
         self.cursor.draw()
 
 
-class SettingsView(arcade.View):
+class SettingsView(View):
     def __init__(self):
         super(SettingsView, self).__init__()
         self.background = None
@@ -216,12 +219,12 @@ class SettingsView(arcade.View):
                                          "russian = 'Настройки'")[0][0],
                        center_x=SCREEN_WIDTH // 2,
                        center_y=SCREEN_HEIGHT - 100)
-        text.set_style_attrs(font_color=arcade.color.BABY_BLUE, font_size=44)
+        text.set_style_attrs(font_color=color.BABY_BLUE, font_size=44)
         self.ui_manager.add_ui_element(text)
 
         btn_settings = UIImageButton(center_x=35, center_y=SCREEN_HEIGHT - 35,
-                                     normal_texture=arcade.load_texture(SETTINGS),
-                                     press_texture=arcade.load_texture(SETTINGS2))
+                                     normal_texture=load_texture(SETTINGS),
+                                     press_texture=load_texture(SETTINGS2))
         btn_settings.set_handler("on_click", self.settings)
         self.ui_manager.add_ui_element(btn_settings)
 
@@ -230,7 +233,7 @@ class SettingsView(arcade.View):
                                                "russian = 'Выбор уровня сложности:'")[0][0],
                              center_x=SCREEN_WIDTH // 2,
                              center_y=SCREEN_HEIGHT - 220)
-        text_level.set_style_attrs(font_color=arcade.color.BABY_BLUE, font_size=30)
+        text_level.set_style_attrs(font_color=color.BABY_BLUE, font_size=30)
         self.ui_manager.add_ui_element(text_level)
 
         text_language = UILabel(database.get_data("dictionary",
@@ -238,7 +241,7 @@ class SettingsView(arcade.View):
                                                   "russian = 'Выбор языка:'")[0][0],
                                 center_x=SCREEN_WIDTH // 2,
                                 center_y=SCREEN_HEIGHT - 600)
-        text_language.set_style_attrs(font_color=arcade.color.BABY_BLUE, font_size=30)
+        text_language.set_style_attrs(font_color=color.BABY_BLUE, font_size=30)
         self.ui_manager.add_ui_element(text_language)
 
         level_easy = UIFlatButton(database.get_data("dictionary",
@@ -248,15 +251,15 @@ class SettingsView(arcade.View):
                                   width=180, height=100)
         level_easy.set_handler("on_click", self.easy)
         level_easy.set_style_attrs(
-            font_color=arcade.color.WHITE,
-            font_color_hover=arcade.color.WHITE,
-            font_color_press=arcade.color.WHITE,
+            font_color=color.WHITE,
+            font_color_hover=color.WHITE,
+            font_color_press=color.WHITE,
             bg_color=(51, 139, 57),
             bg_color_hover=(51, 139, 57),
             bg_color_press=(28, 71, 32),
             border_color=(51, 139, 57),
-            border_color_hover=arcade.color.WHITE,
-            border_color_press=arcade.color.WHITE,
+            border_color_hover=color.WHITE,
+            border_color_press=color.WHITE,
             font_size=22
         )
         self.ui_manager.add_ui_element(level_easy)
@@ -268,15 +271,15 @@ class SettingsView(arcade.View):
                                     width=180, height=100)
         level_medium.set_handler("on_click", self.medium)
         level_medium.set_style_attrs(
-            font_color=arcade.color.WHITE,
-            font_color_hover=arcade.color.WHITE,
-            font_color_press=arcade.color.WHITE,
+            font_color=color.WHITE,
+            font_color_hover=color.WHITE,
+            font_color_press=color.WHITE,
             bg_color=(255, 185, 10),
             bg_color_hover=(255, 185, 10),
             bg_color_press=(230, 160, 0),
             border_color=(255, 185, 10),
-            border_color_hover=arcade.color.WHITE,
-            border_color_press=arcade.color.WHITE,
+            border_color_hover=color.WHITE,
+            border_color_press=color.WHITE,
             font_size=22
         )
         self.ui_manager.add_ui_element(level_medium)
@@ -288,28 +291,28 @@ class SettingsView(arcade.View):
                                   width=180, height=100)
         level_hard.set_handler("on_click", self.hard)
         level_hard.set_style_attrs(
-            font_color=arcade.color.WHITE,
-            font_color_hover=arcade.color.WHITE,
-            font_color_press=arcade.color.WHITE,
+            font_color=color.WHITE,
+            font_color_hover=color.WHITE,
+            font_color_press=color.WHITE,
             bg_color=(155, 21, 25),
             bg_color_hover=(155, 21, 25),
             bg_color_press=(135, 21, 24),
             border_color=(155, 21, 25),
-            border_color_hover=arcade.color.WHITE,
-            border_color_press=arcade.color.WHITE,
+            border_color_hover=color.WHITE,
+            border_color_press=color.WHITE,
             font_size=22
         )
         self.ui_manager.add_ui_element(level_hard)
 
         btn_russia = UIImageButton(center_x=300, center_y=100,
-                                   normal_texture=arcade.load_texture(RUSSIA_IMAGE),
-                                   press_texture=arcade.load_texture(RUSSIA_IMAGE_2))
+                                   normal_texture=load_texture(RUSSIA_IMAGE),
+                                   press_texture=load_texture(RUSSIA_IMAGE_2))
         btn_russia.set_handler("on_click", self.russia)
         self.ui_manager.add_ui_element(btn_russia)
 
         btn_english = UIImageButton(center_x=500, center_y=100,
-                                    normal_texture=arcade.load_texture(ENGLISH_IMAGE),
-                                    press_texture=arcade.load_texture(ENGLISH_IMAGE_2))
+                                    normal_texture=load_texture(ENGLISH_IMAGE),
+                                    press_texture=load_texture(ENGLISH_IMAGE_2))
         btn_english.set_handler("on_click", self.english)
         self.ui_manager.add_ui_element(btn_english)
 
@@ -352,38 +355,38 @@ class SettingsView(arcade.View):
         self.setup()
 
     def on_show(self):
-        arcade.set_viewport(0, SCREEN_WIDTH - 1, 0, SCREEN_HEIGHT - 1)
+        set_viewport(0, SCREEN_WIDTH - 1, 0, SCREEN_HEIGHT - 1)
         self.background = BACKGROUND
         self.coin = COIN
         self.star = STAR
 
     def on_draw(self):
-        arcade.start_render()
+        start_render()
         self.background.draw()
         self.coin.draw()
         self.star.draw()
-        arcade.draw_text(str(count_coins), SCREEN_WIDTH - 80, SCREEN_HEIGHT - 82, anchor_x="right",
-                         color=arcade.color.WHITE, font_size=60, bold=True)
-        arcade.draw_text(str(count_stars), SCREEN_WIDTH - 80, SCREEN_HEIGHT - 165, anchor_x="right",
-                         color=arcade.color.WHITE, font_size=60, bold=True)
-        arcade.draw_text(database.get_data("dictionary",
-                                           language,
-                                           "russian = 'Сейчас выбран'")[0][0],
-                         150,
-                         300,
-                         color=arcade.color.BABY_BLUE,
-                         font_size=34)
-        arcade.draw_text(database.get_data("dictionary",
-                                           language,
-                                           f"russian = '{level} уровень сложности'")[0][0],
-                         150,
-                         268,
-                         color=arcade.color.BABY_BLUE,
-                         font_size=34)
+        draw_text(str(count_coins), SCREEN_WIDTH - 80, SCREEN_HEIGHT - 82, anchor_x="right",
+                  color=color.WHITE, font_size=60, bold=True)
+        draw_text(str(count_stars), SCREEN_WIDTH - 80, SCREEN_HEIGHT - 165, anchor_x="right",
+                  color=color.WHITE, font_size=60, bold=True)
+        draw_text(database.get_data("dictionary",
+                                    language,
+                                    "russian = 'Сейчас выбран'")[0][0],
+                  150,
+                  300,
+                  color=color.BABY_BLUE,
+                  font_size=34)
+        draw_text(database.get_data("dictionary",
+                                    language,
+                                    f"russian = '{level} уровень сложности'")[0][0],
+                  150,
+                  268,
+                  color=color.BABY_BLUE,
+                  font_size=34)
         self.cursor.draw()
 
 
-class NewGameView(arcade.View):
+class NewGameView(View):
     def __init__(self):
         super(NewGameView, self).__init__()
         self.background = None
@@ -405,7 +408,7 @@ class NewGameView(arcade.View):
                                          "russian = 'Вы точно хотите начать новую игру?'")[0][0],
                        center_x=SCREEN_WIDTH // 2,
                        center_y=SCREEN_HEIGHT - 100)
-        text.set_style_attrs(font_color=arcade.color.BABY_BLUE, font_size=30)
+        text.set_style_attrs(font_color=color.BABY_BLUE, font_size=30)
         self.ui_manager.add_ui_element(text)
 
         btn_ok = UIFlatButton(database.get_data("dictionary",
@@ -415,15 +418,15 @@ class NewGameView(arcade.View):
                               width=225, height=100)
         btn_ok.set_handler("on_click", self.ok)
         btn_ok.set_style_attrs(
-            font_color=arcade.color.WHITE,
-            font_color_hover=arcade.color.WHITE,
-            font_color_press=arcade.color.WHITE,
+            font_color=color.WHITE,
+            font_color_hover=color.WHITE,
+            font_color_press=color.WHITE,
             bg_color=(51, 139, 57),
             bg_color_hover=(51, 139, 57),
             bg_color_press=(28, 71, 32),
             border_color=(51, 139, 57),
-            border_color_hover=arcade.color.WHITE,
-            border_color_press=arcade.color.WHITE,
+            border_color_hover=color.WHITE,
+            border_color_press=color.WHITE,
             font_size=22
         )
         self.ui_manager.add_ui_element(btn_ok)
@@ -435,15 +438,15 @@ class NewGameView(arcade.View):
                                   width=225, height=100)
         btn_cancel.set_handler("on_click", self.cancel)
         btn_cancel.set_style_attrs(
-            font_color=arcade.color.WHITE,
-            font_color_hover=arcade.color.WHITE,
-            font_color_press=arcade.color.WHITE,
+            font_color=color.WHITE,
+            font_color_hover=color.WHITE,
+            font_color_press=color.WHITE,
             bg_color=(135, 21, 25),
             bg_color_hover=(135, 21, 25),
             bg_color_press=(122, 21, 24),
             border_color=(135, 21, 25),
-            border_color_hover=arcade.color.WHITE,
-            border_color_press=arcade.color.WHITE,
+            border_color_hover=color.WHITE,
+            border_color_press=color.WHITE,
             font_size=22
         )
         self.ui_manager.add_ui_element(btn_cancel)
@@ -470,24 +473,24 @@ class NewGameView(arcade.View):
         self.window.show_view(view)
 
     def on_show(self):
-        arcade.set_viewport(0, SCREEN_WIDTH - 1, 0, SCREEN_HEIGHT - 1)
+        set_viewport(0, SCREEN_WIDTH - 1, 0, SCREEN_HEIGHT - 1)
         self.background = BACKGROUND
 
     def on_draw(self):
-        arcade.start_render()
+        start_render()
         self.background.draw()
-        arcade.draw_text(database.get_data("dictionary",
-                                           language,
-                                           "russian = 'Если вы начнёте новую игру,'")[0][0],
-                         start_x=125, start_y=520, color=arcade.color.RED, font_size=30)
-        arcade.draw_text(database.get_data("dictionary",
-                                           language,
-                                           "russian = 'то потеряете весь текущий прогресс!'")[0][0],
-                         start_x=125, start_y=487, color=arcade.color.RED, font_size=30)
+        draw_text(database.get_data("dictionary",
+                                    language,
+                                    "russian = 'Если вы начнёте новую игру,'")[0][0],
+                  start_x=125, start_y=520, color=color.RED, font_size=30)
+        draw_text(database.get_data("dictionary",
+                                    language,
+                                    "russian = 'то потеряете весь текущий прогресс!'")[0][0],
+                  start_x=125, start_y=487, color=color.RED, font_size=30)
         self.cursor.draw()
 
 
-class LevelsMenuView(arcade.View):
+class LevelsMenuView(View):
     def __init__(self, num_level=0):
         super(LevelsMenuView, self).__init__()
         self.background = None
@@ -511,20 +514,20 @@ class LevelsMenuView(arcade.View):
         self.ui_manager.purge_ui_elements()
 
         btn_exit = UIImageButton(center_x=40, center_y=SCREEN_HEIGHT - 50,
-                                 normal_texture=arcade.load_texture(DOOR),
-                                 press_texture=arcade.load_texture(DOOR2))
+                                 normal_texture=load_texture(DOOR),
+                                 press_texture=load_texture(DOOR2))
         btn_exit.set_handler("on_click", self.exit)
         self.ui_manager.add_ui_element(btn_exit)
 
         btn_left = UIImageButton(center_x=50, center_y=SCREEN_HEIGHT // 2,
-                                 normal_texture=arcade.load_texture(ARROW, flipped_horizontally=True),
-                                 press_texture=arcade.load_texture(ARROW2, flipped_horizontally=True))
+                                 normal_texture=load_texture(ARROW, flipped_horizontally=True),
+                                 press_texture=load_texture(ARROW2, flipped_horizontally=True))
         btn_left.set_handler("on_click", self.left)
         self.ui_manager.add_ui_element(btn_left)
 
         btn_right = UIImageButton(center_x=SCREEN_WIDTH - 50, center_y=SCREEN_HEIGHT // 2,
-                                  normal_texture=arcade.load_texture(ARROW),
-                                  press_texture=arcade.load_texture(ARROW2))
+                                  normal_texture=load_texture(ARROW),
+                                  press_texture=load_texture(ARROW2))
         btn_right.set_handler("on_click", self.right)
         self.ui_manager.add_ui_element(btn_right)
 
@@ -536,39 +539,39 @@ class LevelsMenuView(arcade.View):
                                 height=120, width=280)
         btn_play.set_handler("on_click", self.play)
         btn_play.set_style_attrs(
-            font_color=arcade.color.WHITE,
-            font_color_hover=arcade.color.WHITE,
-            font_color_press=arcade.color.WHITE,
+            font_color=color.WHITE,
+            font_color_hover=color.WHITE,
+            font_color_press=color.WHITE,
             bg_color=(51, 139, 57),
             bg_color_hover=(51, 139, 57),
             bg_color_press=(28, 71, 32),
             border_color=(51, 139, 57),
-            border_color_hover=arcade.color.WHITE,
-            border_color_press=arcade.color.WHITE,
+            border_color_hover=color.WHITE,
+            border_color_press=color.WHITE,
             font_size=34
         )
         self.ui_manager.add_ui_element(btn_play)
 
     def set_star(self):
         completed = all_levels[self.num_level][3]
-        self.first_star = arcade.Sprite(STAR2_IMAGE, center_x=300, center_y=230)
-        self.second_star = arcade.Sprite(STAR2_IMAGE, center_x=400, center_y=230)
-        self.third_star = arcade.Sprite(STAR2_IMAGE, center_x=500, center_y=230)
+        self.first_star = Sprite(STAR2_IMAGE, center_x=300, center_y=230)
+        self.second_star = Sprite(STAR2_IMAGE, center_x=400, center_y=230)
+        self.third_star = Sprite(STAR2_IMAGE, center_x=500, center_y=230)
         if completed == "лёгкий":
-            self.first_star = arcade.Sprite(STAR_IMAGE, SCALING_STAR,
-                                            center_x=300, center_y=230)
+            self.first_star = Sprite(STAR_IMAGE, SCALING_STAR,
+                                     center_x=300, center_y=230)
         elif completed == "средний":
-            self.first_star = arcade.Sprite(STAR_IMAGE, SCALING_STAR,
-                                            center_x=300, center_y=230)
-            self.second_star = arcade.Sprite(STAR_IMAGE, SCALING_STAR,
-                                             center_x=400, center_y=230)
+            self.first_star = Sprite(STAR_IMAGE, SCALING_STAR,
+                                     center_x=300, center_y=230)
+            self.second_star = Sprite(STAR_IMAGE, SCALING_STAR,
+                                      center_x=400, center_y=230)
         elif completed == "сложный":
-            self.first_star = arcade.Sprite(STAR_IMAGE, SCALING_STAR,
-                                            center_x=300, center_y=230)
-            self.second_star = arcade.Sprite(STAR_IMAGE, SCALING_STAR,
-                                             center_x=400, center_y=230)
-            self.third_star = arcade.Sprite(STAR_IMAGE, SCALING_STAR,
-                                            center_x=500, center_y=230)
+            self.first_star = Sprite(STAR_IMAGE, SCALING_STAR,
+                                     center_x=300, center_y=230)
+            self.second_star = Sprite(STAR_IMAGE, SCALING_STAR,
+                                      center_x=400, center_y=230)
+            self.third_star = Sprite(STAR_IMAGE, SCALING_STAR,
+                                     center_x=500, center_y=230)
 
     def play(self):
         self.btn_play.play(1.2)
@@ -599,33 +602,33 @@ class LevelsMenuView(arcade.View):
         self.set_star()
 
     def on_key_press(self, symbol: int, modifiers: int):
-        if symbol == arcade.key.LEFT:
+        if symbol == key.LEFT:
             self.left()
-        elif symbol == arcade.key.RIGHT:
+        elif symbol == key.RIGHT:
             self.right()
-        elif symbol == arcade.key.ENTER:
+        elif symbol == key.ENTER:
             self.play()
 
     def on_show(self):
-        arcade.set_viewport(0, SCREEN_WIDTH - 1, 0, SCREEN_HEIGHT - 1)
+        set_viewport(0, SCREEN_WIDTH - 1, 0, SCREEN_HEIGHT - 1)
         self.background = BACKGROUND2
         self.coin = COIN
         self.star = STAR
 
     def on_draw(self):
-        arcade.start_render()
+        start_render()
         self.background.draw()
         self.coin.draw()
         self.star.draw()
         self.first_star.draw()
         self.second_star.draw()
         self.third_star.draw()
-        arcade.draw_text(str(count_coins), SCREEN_WIDTH - 80, SCREEN_HEIGHT - 82, anchor_x="right",
-                         color=arcade.color.WHITE, font_size=60, bold=True)
-        arcade.draw_text(str(count_stars), SCREEN_WIDTH - 80, SCREEN_HEIGHT - 165, anchor_x="right",
-                         color=arcade.color.WHITE, font_size=60, bold=True)
-        arcade.draw_text(all_levels[self.num_level][1], start_x=SCREEN_WIDTH // 2, start_y=SCREEN_HEIGHT - 200,
-                         anchor_x="center", color=arcade.color.ORANGE, font_size=44, font_name="")
+        draw_text(str(count_coins), SCREEN_WIDTH - 80, SCREEN_HEIGHT - 82, anchor_x="right",
+                  color=color.WHITE, font_size=60, bold=True)
+        draw_text(str(count_stars), SCREEN_WIDTH - 80, SCREEN_HEIGHT - 165, anchor_x="right",
+                  color=color.WHITE, font_size=60, bold=True)
+        draw_text(all_levels[self.num_level][1], start_x=SCREEN_WIDTH // 2, start_y=SCREEN_HEIGHT - 200,
+                  anchor_x="center", color=color.ORANGE, font_size=44, font_name="")
         count = all_levels[self.num_level][4].count("-")
         textt = database.get_data("dictionary",
                                   language,
@@ -635,11 +638,11 @@ class LevelsMenuView(arcade.View):
             text = database.get_data("dictionary",
                                      language,
                                      "russian = 'На уровне уже собраны все монеты'")[0][0]
-        arcade.draw_text(text=text,
-                         start_x=SCREEN_WIDTH // 2,
-                         start_y=SCREEN_HEIGHT - 260,
-                         anchor_x="center", color=arcade.color.YELLOW_ORANGE,
-                         font_size=24, font_name="")
+        draw_text(text=text,
+                  start_x=SCREEN_WIDTH // 2,
+                  start_y=SCREEN_HEIGHT - 260,
+                  anchor_x="center", color=color.YELLOW_ORANGE,
+                  font_size=24, font_name="")
 
         self.cursor.draw()
 
@@ -657,7 +660,7 @@ def load_level(filename):
     return list(map(lambda x: x.ljust(max_width, '.'), level_map))
 
 
-class GameView(arcade.View):
+class GameView(View):
     def __init__(self, data_level):
         super(GameView, self).__init__()
         self.data_level = data_level
@@ -668,15 +671,15 @@ class GameView(arcade.View):
         self.level_coins = list(data_level[4])
         self.wall_image = data_level[5]
         self.floor_image = data_level[6]
-        self.all_sprites = arcade.SpriteList()
-        self.hearts = arcade.SpriteList()
-        self.coins = arcade.SpriteList()
+        self.all_sprites = SpriteList()
+        self.hearts = SpriteList()
+        self.coins = SpriteList()
         self.coins_list = []
         self.get_coin = []
-        self.floors = arcade.SpriteList()
-        self.walls = arcade.SpriteList()
-        self.horizontal_enemies = arcade.SpriteList()
-        self.vertical_enemies = arcade.SpriteList()
+        self.floors = SpriteList()
+        self.walls = SpriteList()
+        self.horizontal_enemies = SpriteList()
+        self.vertical_enemies = SpriteList()
         self.player = None
         self.exitt = None
         self.music = BACKGROUND_SOUND
@@ -695,42 +698,42 @@ class GameView(arcade.View):
         self.play_song()
 
         for i in range(1, 4):
-            heart = arcade.Sprite(HEART_IMAGE,
-                                  center_x=SCREEN_WIDTH - i * 40,
-                                  center_y=SCREEN_HEIGHT - 25)
+            heart = Sprite(HEART_IMAGE,
+                           center_x=SCREEN_WIDTH - i * 40,
+                           center_y=SCREEN_HEIGHT - 25)
             self.hearts.append(heart)
             self.all_sprites.append(heart)
 
         for y, string in enumerate(self.level):
             for x, column in enumerate(string):
                 if column in ".@123OEV":
-                    floor = arcade.Sprite(f"images/{self.floor_image}",
-                                          center_x=x * TILE_SIZE + TILE_SIZE // 2,
-                                          center_y=(len(self.level) - y - 1) * TILE_SIZE + TILE_SIZE // 2)
+                    floor = Sprite(f"images/{self.floor_image}",
+                                   center_x=x * TILE_SIZE + TILE_SIZE // 2,
+                                   center_y=(len(self.level) - y - 1) * TILE_SIZE + TILE_SIZE // 2)
                     self.floors.append(floor)
                     self.all_sprites.append(floor)
                 elif column == "#":
-                    wall = arcade.Sprite(f"images/{self.wall_image}",
-                                         center_x=x * TILE_SIZE + TILE_SIZE // 2,
-                                         center_y=(len(self.level) - y - 1) * TILE_SIZE + TILE_SIZE // 2)
+                    wall = Sprite(f"images/{self.wall_image}",
+                                  center_x=x * TILE_SIZE + TILE_SIZE // 2,
+                                  center_y=(len(self.level) - y - 1) * TILE_SIZE + TILE_SIZE // 2)
                     self.walls.append(wall)
                     self.all_sprites.append(wall)
 
         for y, string in enumerate(self.level):
             for x, column in enumerate(string):
                 if column == "E":
-                    self.exitt = arcade.Sprite(EXIT_IMAGE,
-                                               center_x=x * TILE_SIZE + TILE_SIZE // 2,
-                                               center_y=(len(self.level) - y - 1) * TILE_SIZE + TILE_SIZE // 2.2,
-                                               scale=0.35)
+                    self.exitt = Sprite(EXIT_IMAGE,
+                                        center_x=x * TILE_SIZE + TILE_SIZE // 2,
+                                        center_y=(len(self.level) - y - 1) * TILE_SIZE + TILE_SIZE // 2.2,
+                                        scale=0.35)
                     self.all_sprites.append(self.exitt)
                 elif column in "123":
-                    textures = [arcade.load_texture(COIN_IMAGE),
-                                arcade.load_texture(COIN_IMAGE_2),
-                                arcade.load_texture(COIN_IMAGE_3),
-                                arcade.load_texture(COIN_IMAGE_4),
-                                arcade.load_texture(COIN_IMAGE_3, mirrored=True),
-                                arcade.load_texture(COIN_IMAGE_2, mirrored=True)]
+                    textures = [load_texture(COIN_IMAGE),
+                                load_texture(COIN_IMAGE_2),
+                                load_texture(COIN_IMAGE_3),
+                                load_texture(COIN_IMAGE_4),
+                                load_texture(COIN_IMAGE_3, mirrored=True),
+                                load_texture(COIN_IMAGE_2, mirrored=True)]
                     coin = Coin(textures)
                     coin.center_x = x * TILE_SIZE + TILE_SIZE // 2
                     coin.center_y = (len(self.level) - y - 1) * TILE_SIZE + TILE_SIZE // 2
@@ -739,8 +742,8 @@ class GameView(arcade.View):
                     self.coins.append(coin)
                     self.all_sprites.append(coin)
                 elif column == "O":
-                    textures = [arcade.load_texture(f"{ENEMY_IMAGE}_walk{i}.png",
-                                                    mirrored=True) for i in range(8)]
+                    textures = [load_texture(f"{ENEMY_IMAGE}_walk{i}.png",
+                                             mirrored=True) for i in range(8)]
                     enemy = Enemy(textures, True, -5)
                     enemy.center_x = x * TILE_SIZE + TILE_SIZE // 2
                     enemy.center_y = (len(self.level) - y - 1) * TILE_SIZE + TILE_SIZE // 2 + 5
@@ -762,25 +765,25 @@ class GameView(arcade.View):
                     self.all_sprites.append(self.player)
 
     def on_key_press(self, symbol: int, modifiers: int):
-        if symbol == arcade.key.ESCAPE:
+        if symbol == key.ESCAPE:
             view = PauseView(self, self.data_level)
             self.window.show_view(view)
-        if symbol == arcade.key.LEFT:
+        if symbol == key.LEFT:
             self.player.center_x -= 50
             if self.player.collides_with_list(self.walls) or self.player.left <= 0:
                 self.player.center_x += 50
             self.player.index(2)
-        if symbol == arcade.key.RIGHT:
+        if symbol == key.RIGHT:
             self.player.center_x += 50
             if self.player.collides_with_list(self.walls) or self.player.right >= SCREEN_WIDTH:
                 self.player.center_x -= 50
             self.player.index(1)
-        if symbol == arcade.key.UP:
+        if symbol == key.UP:
             self.player.center_y += 50
             if self.player.collides_with_list(self.walls) or self.player.top >= SCREEN_HEIGHT - 50:
                 self.player.center_y -= 50
             self.player.index(3)
-        if symbol == arcade.key.DOWN:
+        if symbol == key.DOWN:
             self.player.center_y -= 50
             if self.player.collides_with_list(self.walls) or self.player.bottom <= 0:
                 self.player.center_y += 50
@@ -851,8 +854,8 @@ class GameView(arcade.View):
                     or enemy.collides_with_sprite(self.exitt):
                 mirrored, center_x, center_y, speed = enemy.data()
                 enemy.kill()
-                textures = [arcade.load_texture(f"{ENEMY_IMAGE}_walk{i}.png",
-                                                mirrored=not mirrored) for i in range(8)]
+                textures = [load_texture(f"{ENEMY_IMAGE}_walk{i}.png",
+                                         mirrored=not mirrored) for i in range(8)]
                 enemy = Enemy(textures, not mirrored, -speed)
                 if mirrored:
                     center_x += 8
@@ -872,17 +875,17 @@ class GameView(arcade.View):
         self.current_player.delete()
 
     def on_show(self):
-        arcade.set_viewport(0, SCREEN_WIDTH - 1, 0, SCREEN_HEIGHT - 1)
+        set_viewport(0, SCREEN_WIDTH - 1, 0, SCREEN_HEIGHT - 1)
 
     def on_draw(self):
-        arcade.start_render()
+        start_render()
         self.all_sprites.draw()
-        arcade.draw_text(f"{self.text} {self.count_coin}",
-                         start_x=25, start_y=SCREEN_HEIGHT - 40,
-                         color=arcade.color.ORANGE, font_size=24)
+        draw_text(f"{self.text} {self.count_coin}",
+                  start_x=25, start_y=SCREEN_HEIGHT - 40,
+                  color=color.ORANGE, font_size=24)
 
 
-class PauseView(arcade.View):
+class PauseView(View):
     def __init__(self, game_view, data_level):
         super().__init__()
         self.game_view = game_view
@@ -904,61 +907,61 @@ class PauseView(arcade.View):
                                         "russian = 'Нажмите R, чтобы перезапустить уровень.'")[0][0]
 
     def on_show(self):
-        arcade.set_viewport(0, SCREEN_WIDTH - 1, 0, SCREEN_HEIGHT - 1)
+        set_viewport(0, SCREEN_WIDTH - 1, 0, SCREEN_HEIGHT - 1)
 
     def on_draw(self):
-        arcade.start_render()
+        start_render()
 
         self.game_view.all_sprites.draw()
-        arcade.draw_text(f"{self.game_view.text} {self.game_view.count_coin}",
-                         start_x=25, start_y=SCREEN_HEIGHT - 40,
-                         color=arcade.color.ORANGE, font_size=24)
+        draw_text(f"{self.game_view.text} {self.game_view.count_coin}",
+                  start_x=25, start_y=SCREEN_HEIGHT - 40,
+                  color=color.ORANGE, font_size=24)
 
-        arcade.draw_lrtb_rectangle_filled(0, SCREEN_WIDTH, SCREEN_HEIGHT, 0,
-                                          arcade.color.BABY_BLUE + (175,))
-        arcade.draw_text(self.text_1,
-                         SCREEN_WIDTH / 2,
-                         SCREEN_HEIGHT / 2 + 150,
-                         arcade.color.BLACK, font_size=50, anchor_x="center")
-        arcade.draw_text(self.text_2,
-                         SCREEN_WIDTH / 2,
-                         SCREEN_HEIGHT / 2,
-                         arcade.color.BLACK,
-                         font_size=24,
-                         anchor_x="center")
-        arcade.draw_text(self.text_3,
-                         SCREEN_WIDTH / 2,
-                         SCREEN_HEIGHT / 2 - 30,
-                         arcade.color.BLACK,
-                         font_size=24,
-                         anchor_x="center")
-        arcade.draw_text(self.text_4,
-                         SCREEN_WIDTH / 2,
-                         SCREEN_HEIGHT / 2 - 80,
-                         arcade.color.BLACK,
-                         font_size=24,
-                         anchor_x="center")
-        arcade.draw_text(self.text_5,
-                         SCREEN_WIDTH / 2,
-                         SCREEN_HEIGHT / 2 - 160,
-                         arcade.color.BLACK,
-                         font_size=24,
-                         anchor_x="center")
+        draw_lrtb_rectangle_filled(0, SCREEN_WIDTH, SCREEN_HEIGHT, 0,
+                                   color.BABY_BLUE + (175,))
+        draw_text(self.text_1,
+                  SCREEN_WIDTH / 2,
+                  SCREEN_HEIGHT / 2 + 150,
+                  color.BLACK, font_size=50, anchor_x="center")
+        draw_text(self.text_2,
+                  SCREEN_WIDTH / 2,
+                  SCREEN_HEIGHT / 2,
+                  color.BLACK,
+                  font_size=24,
+                  anchor_x="center")
+        draw_text(self.text_3,
+                  SCREEN_WIDTH / 2,
+                  SCREEN_HEIGHT / 2 - 30,
+                  color.BLACK,
+                  font_size=24,
+                  anchor_x="center")
+        draw_text(self.text_4,
+                  SCREEN_WIDTH / 2,
+                  SCREEN_HEIGHT / 2 - 80,
+                  color.BLACK,
+                  font_size=24,
+                  anchor_x="center")
+        draw_text(self.text_5,
+                  SCREEN_WIDTH / 2,
+                  SCREEN_HEIGHT / 2 - 160,
+                  color.BLACK,
+                  font_size=24,
+                  anchor_x="center")
 
     def on_key_press(self, symbol: int, modifiers: int):
-        if symbol == arcade.key.ESCAPE:
+        if symbol == key.ESCAPE:
             self.window.show_view(self.game_view)
-        elif symbol == arcade.key.R:
+        elif symbol == key.R:
             self.game_view.off_music()
             view = GameView(self.data_level)
             self.window.show_view(view)
-        elif symbol == arcade.key.ENTER:
+        elif symbol == key.ENTER:
             self.game_view.off_music()
             view = LevelsMenuView(self.data_level[0] - 1)
             self.window.show_view(view)
 
 
-class GameEndView(arcade.View):
+class GameEndView(View):
     def __init__(self, game_view, data_level):
         super().__init__()
         self.game_view = game_view
@@ -974,42 +977,42 @@ class GameEndView(arcade.View):
                                         "russian = 'Нажмите R, чтобы перезапустить уровень.'")[0][0]
 
     def on_show(self):
-        arcade.set_viewport(0, SCREEN_WIDTH - 1, 0, SCREEN_HEIGHT - 1)
+        set_viewport(0, SCREEN_WIDTH - 1, 0, SCREEN_HEIGHT - 1)
 
     def on_draw(self):
-        arcade.start_render()
+        start_render()
 
-        arcade.draw_lrtb_rectangle_filled(0, SCREEN_WIDTH, SCREEN_HEIGHT, 0,
-                                          arcade.color.RED_DEVIL)
-        arcade.draw_text(self.text_1,
-                         SCREEN_WIDTH / 2,
-                         SCREEN_HEIGHT / 2 + 150,
-                         arcade.color.BLACK, font_size=50, anchor_x="center")
-        arcade.draw_text(self.text_2,
-                         SCREEN_WIDTH / 2,
-                         SCREEN_HEIGHT / 2,
-                         arcade.color.BLACK,
-                         font_size=24,
-                         anchor_x="center")
-        arcade.draw_text(self.text_3,
-                         SCREEN_WIDTH / 2,
-                         SCREEN_HEIGHT / 2 - 80,
-                         arcade.color.BLACK,
-                         font_size=24,
-                         anchor_x="center")
+        draw_lrtb_rectangle_filled(0, SCREEN_WIDTH, SCREEN_HEIGHT, 0,
+                                   color.RED_DEVIL)
+        draw_text(self.text_1,
+                  SCREEN_WIDTH / 2,
+                  SCREEN_HEIGHT / 2 + 150,
+                  color.BLACK, font_size=50, anchor_x="center")
+        draw_text(self.text_2,
+                  SCREEN_WIDTH / 2,
+                  SCREEN_HEIGHT / 2,
+                  color.BLACK,
+                  font_size=24,
+                  anchor_x="center")
+        draw_text(self.text_3,
+                  SCREEN_WIDTH / 2,
+                  SCREEN_HEIGHT / 2 - 80,
+                  color.BLACK,
+                  font_size=24,
+                  anchor_x="center")
 
     def on_key_press(self, symbol: int, modifiers: int):
-        if symbol == arcade.key.R:
+        if symbol == key.R:
             self.game_view.off_music()
             view = GameView(self.data_level)
             self.window.show_view(view)
-        elif symbol == arcade.key.ENTER:
+        elif symbol == key.ENTER:
             self.game_view.off_music()
             view = LevelsMenuView(self.data_level[0] - 1)
             self.window.show_view(view)
 
 
-class GameWinView(arcade.View):
+class GameWinView(View):
     def __init__(self, game_view, data_level):
         super().__init__()
         self.game_view = game_view
@@ -1037,54 +1040,54 @@ class GameWinView(arcade.View):
                                         f"russian = '{level.capitalize()}'")[0][0]
 
     def on_show(self):
-        arcade.set_viewport(0, SCREEN_WIDTH - 1, 0, SCREEN_HEIGHT - 1)
+        set_viewport(0, SCREEN_WIDTH - 1, 0, SCREEN_HEIGHT - 1)
 
     def on_draw(self):
-        arcade.start_render()
+        start_render()
 
-        arcade.draw_lrtb_rectangle_filled(0, SCREEN_WIDTH, SCREEN_HEIGHT, 0,
-                                          arcade.color.GREEN)
-        arcade.draw_text(self.text_3,
-                         SCREEN_WIDTH / 2,
-                         SCREEN_HEIGHT / 2 + 150,
-                         arcade.color.BLACK, font_size=50, anchor_x="center")
-        arcade.draw_text(f"{self.text_1} {self.game_view.count_coin} {self.text_2}!",
-                         SCREEN_WIDTH / 2,
-                         SCREEN_HEIGHT / 2,
-                         arcade.color.BLACK,
-                         font_size=24,
-                         anchor_x="center")
-        arcade.draw_text(f'{self.text_6} "{self.text_7.lower()}"',
-                         SCREEN_WIDTH / 2,
-                         SCREEN_HEIGHT / 2 - 80,
-                         arcade.color.BLACK,
-                         font_size=24,
-                         anchor_x="center")
-        arcade.draw_text(self.text_4,
-                         SCREEN_WIDTH / 2,
-                         SCREEN_HEIGHT / 2 - 160,
-                         arcade.color.BLACK,
-                         font_size=24,
-                         anchor_x="center")
-        arcade.draw_text(self.text_5,
-                         SCREEN_WIDTH / 2,
-                         SCREEN_HEIGHT / 2 - 240,
-                         arcade.color.BLACK,
-                         font_size=24,
-                         anchor_x="center")
+        draw_lrtb_rectangle_filled(0, SCREEN_WIDTH, SCREEN_HEIGHT, 0,
+                                   color.GREEN)
+        draw_text(self.text_3,
+                  SCREEN_WIDTH / 2,
+                  SCREEN_HEIGHT / 2 + 150,
+                  color.BLACK, font_size=50, anchor_x="center")
+        draw_text(f"{self.text_1} {self.game_view.count_coin} {self.text_2}!",
+                  SCREEN_WIDTH / 2,
+                  SCREEN_HEIGHT / 2,
+                  color.BLACK,
+                  font_size=24,
+                  anchor_x="center")
+        draw_text(f'{self.text_6} "{self.text_7.lower()}"',
+                  SCREEN_WIDTH / 2,
+                  SCREEN_HEIGHT / 2 - 80,
+                  color.BLACK,
+                  font_size=24,
+                  anchor_x="center")
+        draw_text(self.text_4,
+                  SCREEN_WIDTH / 2,
+                  SCREEN_HEIGHT / 2 - 160,
+                  color.BLACK,
+                  font_size=24,
+                  anchor_x="center")
+        draw_text(self.text_5,
+                  SCREEN_WIDTH / 2,
+                  SCREEN_HEIGHT / 2 - 240,
+                  color.BLACK,
+                  font_size=24,
+                  anchor_x="center")
 
     def on_key_press(self, symbol: int, modifiers: int):
-        if symbol == arcade.key.R:
+        if symbol == key.R:
             self.game_view.off_music()
             view = GameView(self.data_level)
             self.window.show_view(view)
-        elif symbol == arcade.key.ENTER:
+        elif symbol == key.ENTER:
             self.game_view.off_music()
             view = LevelsMenuView(self.data_level[0] - 1)
             self.window.show_view(view)
 
 
-class InstructionView(arcade.View):
+class InstructionView(View):
     def __init__(self):
         super(InstructionView, self).__init__()
         self.background = None
@@ -1126,13 +1129,13 @@ class InstructionView(arcade.View):
                                          "russian = 'Об игре'")[0][0],
                        center_x=SCREEN_WIDTH // 2,
                        center_y=SCREEN_HEIGHT - 100)
-        text.set_style_attrs(font_color=arcade.color.BABY_BLUE, font_size=44)
+        text.set_style_attrs(font_color=color.BABY_BLUE, font_size=44)
         self.ui_manager.add_ui_element(text)
 
         btn_instruction = UIImageButton(center_x=50,
                                         center_y=45,
-                                        normal_texture=arcade.load_texture(INSTRUCTION_IMAGE),
-                                        press_texture=arcade.load_texture(INSTRUCTION_IMAGE_2))
+                                        normal_texture=load_texture(INSTRUCTION_IMAGE),
+                                        press_texture=load_texture(INSTRUCTION_IMAGE_2))
         btn_instruction.set_handler("on_click", self.instruction)
         self.ui_manager.add_ui_element(btn_instruction)
 
@@ -1147,69 +1150,69 @@ class InstructionView(arcade.View):
         self.cursor.center_y = y
 
     def on_show(self):
-        arcade.set_viewport(0, SCREEN_WIDTH - 1, 0, SCREEN_HEIGHT - 1)
+        set_viewport(0, SCREEN_WIDTH - 1, 0, SCREEN_HEIGHT - 1)
         self.background = BACKGROUND
         self.coin = COIN
         self.star = STAR
 
     def on_draw(self):
-        arcade.start_render()
+        start_render()
         self.background.draw()
         self.coin.draw()
         self.star.draw()
-        arcade.draw_text(str(count_coins),
-                         SCREEN_WIDTH - 80,
-                         SCREEN_HEIGHT - 82,
-                         anchor_x="right",
-                         color=arcade.color.WHITE,
-                         font_size=60,
-                         bold=True)
-        arcade.draw_text(str(count_stars),
-                         SCREEN_WIDTH - 80,
-                         SCREEN_HEIGHT - 165,
-                         anchor_x="right",
-                         color=arcade.color.WHITE,
-                         font_size=60,
-                         bold=True)
-        arcade.draw_text(f"{SCREEN_TITLE} {self.text_1}",
-                         SCREEN_WIDTH // 2, 530,
-                         color=arcade.color.BABY_BLUE,
-                         font_size=24,
-                         anchor_x="center")
-        arcade.draw_text(self.text_2,
-                         SCREEN_WIDTH // 2, 500,
-                         color=arcade.color.BABY_BLUE,
-                         font_size=24,
-                         anchor_x="center")
-        arcade.draw_text(self.text_3,
-                         SCREEN_WIDTH // 2 + 80, 400,
-                         color=arcade.color.BABY_BLUE,
-                         font_size=24,
-                         anchor_x="center")
-        arcade.draw_text(self.text_4,
-                         SCREEN_WIDTH // 2 + 80, 370,
-                         color=arcade.color.BABY_BLUE,
-                         font_size=24,
-                         anchor_x="center")
-        arcade.draw_text(self.text_5,
-                         SCREEN_WIDTH // 2 + 80, 340,
-                         color=arcade.color.BABY_BLUE,
-                         font_size=24,
-                         anchor_x="center")
-        arcade.draw_text(self.text_6,
-                         SCREEN_WIDTH // 2 - 50, 270,
-                         color=arcade.color.BABY_BLUE,
-                         font_size=24,
-                         anchor_x="center")
-        arcade.draw_text(self.text_7,
-                         SCREEN_WIDTH // 2 - 50, 240,
-                         color=arcade.color.BABY_BLUE,
-                         font_size=24,
-                         anchor_x="center")
+        draw_text(str(count_coins),
+                  SCREEN_WIDTH - 80,
+                  SCREEN_HEIGHT - 82,
+                  anchor_x="right",
+                  color=color.WHITE,
+                  font_size=60,
+                  bold=True)
+        draw_text(str(count_stars),
+                  SCREEN_WIDTH - 80,
+                  SCREEN_HEIGHT - 165,
+                  anchor_x="right",
+                  color=color.WHITE,
+                  font_size=60,
+                  bold=True)
+        draw_text(f"{SCREEN_TITLE} {self.text_1}",
+                  SCREEN_WIDTH // 2, 530,
+                  color=color.BABY_BLUE,
+                  font_size=24,
+                  anchor_x="center")
+        draw_text(self.text_2,
+                  SCREEN_WIDTH // 2, 500,
+                  color=color.BABY_BLUE,
+                  font_size=24,
+                  anchor_x="center")
+        draw_text(self.text_3,
+                  SCREEN_WIDTH // 2 + 80, 400,
+                  color=color.BABY_BLUE,
+                  font_size=24,
+                  anchor_x="center")
+        draw_text(self.text_4,
+                  SCREEN_WIDTH // 2 + 80, 370,
+                  color=color.BABY_BLUE,
+                  font_size=24,
+                  anchor_x="center")
+        draw_text(self.text_5,
+                  SCREEN_WIDTH // 2 + 80, 340,
+                  color=color.BABY_BLUE,
+                  font_size=24,
+                  anchor_x="center")
+        draw_text(self.text_6,
+                  SCREEN_WIDTH // 2 - 50, 270,
+                  color=color.BABY_BLUE,
+                  font_size=24,
+                  anchor_x="center")
+        draw_text(self.text_7,
+                  SCREEN_WIDTH // 2 - 50, 240,
+                  color=color.BABY_BLUE,
+                  font_size=24,
+                  anchor_x="center")
         self.cursor.draw()
 
 
-class ShopView(arcade.View):
+class ShopView(View):
     def __init__(self):
         super(ShopView, self).__init__()
         self.background = None
@@ -1232,21 +1235,21 @@ class ShopView(arcade.View):
         self.ui_manager.purge_ui_elements()
 
         btn_left = UIImageButton(center_x=50, center_y=SCREEN_HEIGHT // 2,
-                                 normal_texture=arcade.load_texture(ARROW, flipped_horizontally=True),
-                                 press_texture=arcade.load_texture(ARROW2, flipped_horizontally=True))
+                                 normal_texture=load_texture(ARROW, flipped_horizontally=True),
+                                 press_texture=load_texture(ARROW2, flipped_horizontally=True))
         btn_left.set_handler("on_click", self.left)
         self.ui_manager.add_ui_element(btn_left)
 
         btn_right = UIImageButton(center_x=SCREEN_WIDTH - 50, center_y=SCREEN_HEIGHT // 2,
-                                  normal_texture=arcade.load_texture(ARROW),
-                                  press_texture=arcade.load_texture(ARROW2))
+                                  normal_texture=load_texture(ARROW),
+                                  press_texture=load_texture(ARROW2))
         btn_right.set_handler("on_click", self.right)
         self.ui_manager.add_ui_element(btn_right)
 
         btn_shop = UIImageButton(center_x=SCREEN_WIDTH - 50,
                                  center_y=45,
-                                 normal_texture=arcade.load_texture(SHOP_IMAGE),
-                                 press_texture=arcade.load_texture(SHOP_IMAGE_2))
+                                 normal_texture=load_texture(SHOP_IMAGE),
+                                 press_texture=load_texture(SHOP_IMAGE_2))
         btn_shop.set_handler("on_click", self.shop)
         self.ui_manager.add_ui_element(btn_shop)
 
@@ -1255,7 +1258,7 @@ class ShopView(arcade.View):
                                          f"russian = '{all_person[self.num_person][1]}'")[0][0],
                        center_x=SCREEN_WIDTH // 2,
                        center_y=SCREEN_HEIGHT - 120)
-        text.set_style_attrs(font_color=arcade.color.BABY_BLUE, font_size=54)
+        text.set_style_attrs(font_color=color.BABY_BLUE, font_size=54)
         self.ui_manager.add_ui_element(text)
 
         if player == all_person[self.num_person][2]:
@@ -1264,7 +1267,7 @@ class ShopView(arcade.View):
                                              "russian = 'Выбрано'")[0][0],
                            center_x=SCREEN_WIDTH // 2,
                            center_y=SCREEN_HEIGHT // 2 - 270)
-            text.set_style_attrs(font_color=arcade.color.WHITE, font_size=34)
+            text.set_style_attrs(font_color=color.WHITE, font_size=34)
             self.ui_manager.add_ui_element(text)
         else:
             if all_person[self.num_person][4] == "True":
@@ -1276,15 +1279,15 @@ class ShopView(arcade.View):
                                           height=120, width=250)
                 btn_select.set_handler("on_click", self.select)
                 btn_select.set_style_attrs(
-                    font_color=arcade.color.WHITE,
-                    font_color_hover=arcade.color.WHITE,
-                    font_color_press=arcade.color.WHITE,
+                    font_color=color.WHITE,
+                    font_color_hover=color.WHITE,
+                    font_color_press=color.WHITE,
                     bg_color=(51, 139, 57),
                     bg_color_hover=(51, 139, 57),
                     bg_color_press=(28, 71, 32),
                     border_color=(51, 139, 57),
-                    border_color_hover=arcade.color.WHITE,
-                    border_color_press=arcade.color.WHITE,
+                    border_color_hover=color.WHITE,
+                    border_color_press=color.WHITE,
                     font_size=34
                 )
                 self.ui_manager.add_ui_element(btn_select)
@@ -1300,7 +1303,7 @@ class ShopView(arcade.View):
                 text = UILabel(textt,
                                center_x=SCREEN_WIDTH // 2,
                                center_y=SCREEN_HEIGHT // 2 - 165)
-                text.set_style_attrs(font_color=arcade.color.WHITE, font_size=34)
+                text.set_style_attrs(font_color=color.WHITE, font_size=34)
                 self.ui_manager.add_ui_element(text)
 
                 btn_buy = UIFlatButton(database.get_data("dictionary",
@@ -1311,15 +1314,15 @@ class ShopView(arcade.View):
                                        height=120, width=250)
                 btn_buy.set_handler("on_click", self.buy)
                 btn_buy.set_style_attrs(
-                    font_color=arcade.color.WHITE,
-                    font_color_hover=arcade.color.WHITE,
-                    font_color_press=arcade.color.WHITE,
+                    font_color=color.WHITE,
+                    font_color_hover=color.WHITE,
+                    font_color_press=color.WHITE,
                     bg_color=(135, 21, 25),
                     bg_color_hover=(135, 21, 25),
                     bg_color_press=(122, 21, 24),
                     border_color=(135, 21, 25),
-                    border_color_hover=arcade.color.WHITE,
-                    border_color_press=arcade.color.WHITE,
+                    border_color_hover=color.WHITE,
+                    border_color_press=color.WHITE,
                     font_size=34
                 )
                 self.ui_manager.add_ui_element(btn_buy)
@@ -1380,9 +1383,9 @@ class ShopView(arcade.View):
                                    center_y=SCREEN_HEIGHT // 2 + 50, scale=3)
 
     def on_key_press(self, symbol: int, modifiers: int):
-        if symbol == arcade.key.LEFT:
+        if symbol == key.LEFT:
             self.left()
-        elif symbol == arcade.key.RIGHT:
+        elif symbol == key.RIGHT:
             self.right()
 
     def on_mouse_motion(self, x: float, y: float, dx: float, dy: float):
@@ -1390,19 +1393,19 @@ class ShopView(arcade.View):
         self.cursor.center_y = y
 
     def on_show(self):
-        arcade.set_viewport(0, SCREEN_WIDTH - 1, 0, SCREEN_HEIGHT - 1)
+        set_viewport(0, SCREEN_WIDTH - 1, 0, SCREEN_HEIGHT - 1)
         self.background = BACKGROUND2
         self.coin = COIN
         self.star = STAR
 
     def on_draw(self):
-        arcade.start_render()
+        start_render()
         self.background.draw()
         self.coin.draw()
         self.star.draw()
-        arcade.draw_text(str(count_coins), SCREEN_WIDTH - 80, SCREEN_HEIGHT - 82, anchor_x="right",
-                         color=arcade.color.WHITE, font_size=60, bold=True)
-        arcade.draw_text(str(count_stars), SCREEN_WIDTH - 80, SCREEN_HEIGHT - 165, anchor_x="right",
-                         color=arcade.color.WHITE, font_size=60, bold=True)
+        draw_text(str(count_coins), SCREEN_WIDTH - 80, SCREEN_HEIGHT - 82, anchor_x="right",
+                  color=color.WHITE, font_size=60, bold=True)
+        draw_text(str(count_stars), SCREEN_WIDTH - 80, SCREEN_HEIGHT - 165, anchor_x="right",
+                  color=color.WHITE, font_size=60, bold=True)
         self.person_image.draw()
         self.cursor.draw()

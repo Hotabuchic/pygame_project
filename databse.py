@@ -1,4 +1,4 @@
-import sqlite3
+from sqlite3 import connect
 
 
 class DataBase:
@@ -6,7 +6,7 @@ class DataBase:
         self.name_database = name_database
 
     def get_data(self, name_tables, name_data="*", criterion="", data_criterion=None):
-        self.con = sqlite3.connect(self.name_database)
+        self.con = connect(self.name_database)
         self.cur = self.con.cursor()
 
         if data_criterion is not None and criterion != "":
@@ -30,7 +30,7 @@ class DataBase:
 
     def add_data(self, name_tables, data_criterion=None):
         if data_criterion is not None:
-            self.con = sqlite3.connect(self.name_database)
+            self.con = connect(self.name_database)
             self.cur = self.con.cursor()
 
             question_mark = ", ".join(["?" for _ in
@@ -42,7 +42,7 @@ class DataBase:
             self.con.close()
 
     def change_data(self, name_tables, col, data_criterion=None):
-        self.con = sqlite3.connect(self.name_database)
+        self.con = connect(self.name_database)
         self.cur = self.con.cursor()
 
         if data_criterion is None:
