@@ -45,7 +45,8 @@ class Enemy(Sprite):
 
 class VerticalEnemy(Sprite):
     def __init__(self, image, speed_y):
-        super(VerticalEnemy, self).__init__(filename=image)
+        super(VerticalEnemy, self).__init__(filename=image,
+                                            hit_box_algorithm="Detailed")
         self.speed_y = speed_y
 
     def update(self):

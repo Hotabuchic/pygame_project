@@ -454,7 +454,7 @@ class NewGameView(View):
     def ok(self):
         global count_coins, count_stars, all_levels, all_person, player
         self.btn_2.play(1.25)
-        database.change_data("levels", "completed = 'False', all_coins = '+++'")
+        database.change_data("levels", "completed = 'False', all_coins = '+++', time = 'False'")
         database.change_data("persons", "received = 'False'", "id > 1")
         database.change_data("player_info", "person_id = 1, current_level = 'лёгкий', count_coins = 0")
         count_coins = database.get_data("player_info", "count_coins")[0][0]
@@ -606,8 +606,6 @@ class LevelsMenuView(View):
             self.left()
         elif symbol == key.RIGHT:
             self.right()
-        elif symbol == key.ENTER:
-            self.play()
 
     def on_show(self):
         set_viewport(0, SCREEN_WIDTH - 1, 0, SCREEN_HEIGHT - 1)
@@ -768,22 +766,22 @@ class GameView(View):
         if symbol == key.ESCAPE:
             view = PauseView(self, self.data_level)
             self.window.show_view(view)
-        if symbol == key.LEFT:
+        elif symbol == key.LEFT:
             self.player.center_x -= 50
             if self.player.collides_with_list(self.walls) or self.player.left <= 0:
                 self.player.center_x += 50
             self.player.index(2)
-        if symbol == key.RIGHT:
+        elif symbol == key.RIGHT:
             self.player.center_x += 50
             if self.player.collides_with_list(self.walls) or self.player.right >= SCREEN_WIDTH:
                 self.player.center_x -= 50
             self.player.index(1)
-        if symbol == key.UP:
+        elif symbol == key.UP:
             self.player.center_y += 50
             if self.player.collides_with_list(self.walls) or self.player.top >= SCREEN_HEIGHT - 50:
                 self.player.center_y -= 50
             self.player.index(3)
-        if symbol == key.DOWN:
+        elif symbol == key.DOWN:
             self.player.center_y -= 50
             if self.player.collides_with_list(self.walls) or self.player.bottom <= 0:
                 self.player.center_y += 50
