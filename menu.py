@@ -1,3 +1,4 @@
+from math import floor
 from time import sleep
 
 from arcade import View, color, \
@@ -505,6 +506,9 @@ class LevelsMenuView(View):
         self.btn = BUTTON_SOUND_2
         self.back = SETTINGS_SOUND
         self.btn_play = PLAY_SOUND
+        self.text = database.get_data("dictionary",
+                                      language,
+                                      "russian = 'Время прохождения -'")[0][0]
 
     def on_mouse_motion(self, x: float, y: float, dx: float, dy: float):
         self.cursor.center_x = x
@@ -553,6 +557,7 @@ class LevelsMenuView(View):
         self.ui_manager.add_ui_element(btn_play)
 
     def set_star(self):
+        self.time = all_levels[self.num_level][7]
         completed = all_levels[self.num_level][3]
         self.first_star = Sprite(STAR2_IMAGE, center_x=300, center_y=230)
         self.second_star = Sprite(STAR2_IMAGE, center_x=400, center_y=230)
@@ -641,6 +646,13 @@ class LevelsMenuView(View):
                   start_y=SCREEN_HEIGHT - 260,
                   anchor_x="center", color=color.YELLOW_ORANGE,
                   font_size=24, font_name="")
+        if self.time != "False":
+            draw_text(f"{self.text} {self.time}",
+                      SCREEN_WIDTH / 2,
+                      100,
+                      color.BABY_BLUE,
+                      font_size=32,
+                      anchor_x="center")
 
         self.cursor.draw()
 
@@ -687,6 +699,7 @@ class GameView(View):
         self.win_sound = WIN_SOUND
         self.count_coin = 0
         self.time_after_hit = 0.7
+        self.time_level = 0
         self.text = database.get_data("dictionary",
                                       language,
                                       "russian = 'Монет собрано:'")[0][0]
@@ -793,6 +806,7 @@ class GameView(View):
 
     def on_update(self, delta_time: float):
         global all_levels, count_coins, count_stars
+        self.time_level += delta_time
         self.time_after_hit += delta_time
         self.coins.update()
         self.vertical_enemies.update()
@@ -812,6 +826,10 @@ class GameView(View):
                                          data_criterion=f"id = {self.id}")
                     count_coins += x
                     database.change_data("player_info", f"count_coins = {count_coins}")
+            millis = str(round(self.time_level % 1, 2))[2:]
+            database.change_data("levels",
+                                 f"time = '{int(self.time_level // 60)}:{floor(self.time_level % 60)}:{millis}'",
+                                 data_criterion=f"id = {self.id}")
             all_levels = database.get_data("levels")
             count_stars = think_stars(database.get_data("levels", "completed"))
             self.data_level = all_levels[int(self.id) - 1]
@@ -881,6 +899,9 @@ class GameView(View):
         draw_text(f"{self.text} {self.count_coin}",
                   start_x=25, start_y=SCREEN_HEIGHT - 40,
                   color=color.ORANGE, font_size=24)
+        millis = str(round(self.time_level % 1, 2))[2:]
+        draw_text(f"{int(self.time_level // 60)}:{floor(self.time_level % 60)}:{millis}",
+                  SCREEN_WIDTH // 2 - 50, SCREEN_HEIGHT - 45, color=color.WHITE, font_size=30)
 
 
 class PauseView(View):
@@ -914,6 +935,9 @@ class PauseView(View):
         draw_text(f"{self.game_view.text} {self.game_view.count_coin}",
                   start_x=25, start_y=SCREEN_HEIGHT - 40,
                   color=color.ORANGE, font_size=24)
+        millis = str(round(self.game_view.time_level % 1, 2))[2:]
+        draw_text(f"{int(self.game_view.time_level // 60)}:{floor(self.game_view.time_level % 60)}:{millis}",
+                  SCREEN_WIDTH // 2 - 50, SCREEN_HEIGHT - 45, color=color.WHITE, font_size=30)
 
         draw_lrtb_rectangle_filled(0, SCREEN_WIDTH, SCREEN_HEIGHT, 0,
                                    color.BABY_BLUE + (175,))
@@ -1036,6 +1060,10 @@ class GameWinView(View):
         self.text_7 = database.get_data("dictionary",
                                         language,
                                         f"russian = '{level.capitalize()}'")[0][0]
+        self.text_8 = database.get_data("dictionary",
+                                        language,
+                                        "russian = 'Время прохождения -'")[0][0]
+        self.millis = str(round(self.game_view.time_level % 1, 2))[2:]
 
     def on_show(self):
         set_viewport(0, SCREEN_WIDTH - 1, 0, SCREEN_HEIGHT - 1)
@@ -1061,15 +1089,22 @@ class GameWinView(View):
                   color.BLACK,
                   font_size=24,
                   anchor_x="center")
-        draw_text(self.text_4,
+        draw_text(f"{self.text_8} {int(self.game_view.time_level // 60)}:"
+                  f"{floor(self.game_view.time_level % 60)}:{self.millis}",
                   SCREEN_WIDTH / 2,
                   SCREEN_HEIGHT / 2 - 160,
                   color.BLACK,
                   font_size=24,
                   anchor_x="center")
-        draw_text(self.text_5,
+        draw_text(self.text_4,
                   SCREEN_WIDTH / 2,
                   SCREEN_HEIGHT / 2 - 240,
+                  color.BLACK,
+                  font_size=24,
+                  anchor_x="center")
+        draw_text(self.text_5,
+                  SCREEN_WIDTH / 2,
+                  SCREEN_HEIGHT / 2 - 320,
                   color.BLACK,
                   font_size=24,
                   anchor_x="center")
@@ -1216,6 +1251,7 @@ class ShopView(View):
         self.background = None
         self.coin = None
         self.star = None
+        self.time_buy = 3
         self.ui_manager = UIManager(self.window)
         self.cursor = CURSOR
         self.btn_shop = BUTTON_SOUND
@@ -1228,6 +1264,9 @@ class ShopView(View):
                                    center_x=SCREEN_WIDTH // 2,
                                    center_y=SCREEN_HEIGHT // 2 + 50, scale=3)
         self.setup()
+
+    def update(self, delta_time: float):
+        self.time_buy += delta_time
 
     def setup(self):
         self.ui_manager.purge_ui_elements()
@@ -1349,6 +1388,8 @@ class ShopView(View):
                                        "persons.path",
                                        "player_info.person_id = persons.id")[0][0]
             self.setup()
+        else:
+            self.time_buy = 0
 
     def shop(self):
         self.btn_shop.play()
@@ -1405,5 +1446,12 @@ class ShopView(View):
                   color=color.WHITE, font_size=60, bold=True)
         draw_text(str(count_stars), SCREEN_WIDTH - 80, SCREEN_HEIGHT - 165, anchor_x="right",
                   color=color.WHITE, font_size=60, bold=True)
+        if self.time_buy < 3:
+            draw_text(database.get_data("dictionary",
+                                        language,
+                                        "russian = 'Недостаточно монет!'")[0][0],
+                      SCREEN_WIDTH // 2, SCREEN_HEIGHT - 80,
+                      anchor_x="center",
+                      color=color.RED, font_size=40, bold=True)
         self.person_image.draw()
         self.cursor.draw()
