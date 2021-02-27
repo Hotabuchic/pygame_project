@@ -4,6 +4,7 @@ from time import sleep
 from arcade import View, color, \
     draw_text, key, set_viewport, \
     start_render, close_window, SpriteList, draw_lrtb_rectangle_filled
+from arcade.experimental.lights import Light, LightLayer
 from arcade.gui import UIManager, UILabel, UIFlatButton, UIImageButton
 
 from constants import *
@@ -703,6 +704,8 @@ class GameView(View):
         self.text = database.get_data("dictionary",
                                       language,
                                       "russian = 'Монет собрано:'")[0][0]
+        self.light_layer = LightLayer(SCREEN_WIDTH, SCREEN_HEIGHT)
+        self.light = None
         self.setup()
 
     def setup(self):
@@ -774,6 +777,10 @@ class GameView(View):
                     self.player.center_y = (len(self.level) - y - 1) * TILE_SIZE + TILE_SIZE // 2 + 5
                     self.player.scale = 0.45
                     self.all_sprites.append(self.player)
+                    self.light = Light(x * TILE_SIZE + TILE_SIZE // 2,
+                                       (len(self.level) - y - 1) * TILE_SIZE + TILE_SIZE // 2,
+                                       150, color.WHITE, 'soft')
+                    self.light_layer.add(self.light)
 
     def on_key_press(self, symbol: int, modifiers: int):
         if symbol == key.ESCAPE:
@@ -804,6 +811,11 @@ class GameView(View):
         self.current_player = self.music.play(MUSIC_VOLUME)
         sleep(0.03)
 
+    def to_sec(self, time):
+        time = list(map(int, time.split(":")))
+        new_time = time[0] * 60 + time[1] + time[2] / 100
+        return new_time
+
     def on_update(self, delta_time: float):
         global all_levels, count_coins, count_stars
         self.time_level += delta_time
@@ -812,6 +824,7 @@ class GameView(View):
         self.vertical_enemies.update()
         self.horizontal_enemies.update()
         self.player.update()
+        self.light.position = self.player.position
         if self.player.collides_with_sprite(self.exitt):
             if help_dict_for_stars[level] >= help_dict_for_stars[self.completed]:
                 database.change_data("levels",
@@ -826,10 +839,14 @@ class GameView(View):
                                          data_criterion=f"id = {self.id}")
                     count_coins += x
                     database.change_data("player_info", f"count_coins = {count_coins}")
+            time_old = database.get_data("levels", "time", data_criterion=f"id = {self.id}")[0][0]
             millis = str(round(self.time_level % 1, 2))[2:]
-            database.change_data("levels",
-                                 f"time = '{int(self.time_level // 60)}:{floor(self.time_level % 60)}:{millis}'",
-                                 data_criterion=f"id = {self.id}")
+            if time_old == "False" \
+                    or self.to_sec(f"{int(self.time_level // 60)}:{floor(self.time_level % 60)}:{millis}") \
+                    < self.to_sec(time_old):
+                database.change_data("levels",
+                                     f"time = '{int(self.time_level // 60)}:{floor(self.time_level % 60)}:{millis}'",
+                                     data_criterion=f"id = {self.id}")
             all_levels = database.get_data("levels")
             count_stars = think_stars(database.get_data("levels", "completed"))
             self.data_level = all_levels[int(self.id) - 1]
@@ -895,13 +912,16 @@ class GameView(View):
 
     def on_draw(self):
         start_render()
-        self.all_sprites.draw()
+        with self.light_layer:
+            self.all_sprites.draw()
+        self.light_layer.draw(ambient_color=(5, 5, 5))
         draw_text(f"{self.text} {self.count_coin}",
                   start_x=25, start_y=SCREEN_HEIGHT - 40,
                   color=color.ORANGE, font_size=24)
         millis = str(round(self.time_level % 1, 2))[2:]
         draw_text(f"{int(self.time_level // 60)}:{floor(self.time_level % 60)}:{millis}",
                   SCREEN_WIDTH // 2 - 50, SCREEN_HEIGHT - 45, color=color.WHITE, font_size=30)
+        self.hearts.draw()
 
 
 class PauseView(View):
