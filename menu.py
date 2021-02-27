@@ -681,7 +681,13 @@ class GameView(View):
         self.count_hit = help_dict_for_stars[level]
         self.level_coins = list(data_level[4])
         self.wall_image = data_level[5]
+        if self.wall_image[0] != ":":
+            self.wall_image = "images/" + self.wall_image
         self.floor_image = data_level[6]
+        if self.floor_image[0] != ":":
+            self.floor_image = "images/" + self.floor_image
+        self.scale_wall = data_level[8]
+        self.scale_floor = data_level[9]
         self.all_sprites = SpriteList()
         self.hearts = SpriteList()
         self.coins = SpriteList()
@@ -721,15 +727,17 @@ class GameView(View):
         for y, string in enumerate(self.level):
             for x, column in enumerate(string):
                 if column in ".@123OEV":
-                    floor = Sprite(f"images/{self.floor_image}",
+                    floor = Sprite(self.floor_image,
                                    center_x=x * TILE_SIZE + TILE_SIZE // 2,
-                                   center_y=(len(self.level) - y - 1) * TILE_SIZE + TILE_SIZE // 2)
+                                   center_y=(len(self.level) - y - 1) * TILE_SIZE + TILE_SIZE // 2,
+                                   scale=self.scale_floor)
                     self.floors.append(floor)
                     self.all_sprites.append(floor)
                 elif column == "#":
-                    wall = Sprite(f"images/{self.wall_image}",
+                    wall = Sprite(self.wall_image,
                                   center_x=x * TILE_SIZE + TILE_SIZE // 2,
-                                  center_y=(len(self.level) - y - 1) * TILE_SIZE + TILE_SIZE // 2)
+                                  center_y=(len(self.level) - y - 1) * TILE_SIZE + TILE_SIZE // 2,
+                                  scale=self.scale_wall)
                     self.walls.append(wall)
                     self.all_sprites.append(wall)
 
@@ -951,13 +959,16 @@ class PauseView(View):
     def on_draw(self):
         start_render()
 
-        self.game_view.all_sprites.draw()
+        with self.game_view.light_layer:
+            self.game_view.all_sprites.draw()
+        self.game_view.light_layer.draw(ambient_color=(5, 5, 5))
         draw_text(f"{self.game_view.text} {self.game_view.count_coin}",
                   start_x=25, start_y=SCREEN_HEIGHT - 40,
                   color=color.ORANGE, font_size=24)
         millis = str(round(self.game_view.time_level % 1, 2))[2:]
         draw_text(f"{int(self.game_view.time_level // 60)}:{floor(self.game_view.time_level % 60)}:{millis}",
                   SCREEN_WIDTH // 2 - 50, SCREEN_HEIGHT - 45, color=color.WHITE, font_size=30)
+        self.game_view.hearts.draw()
 
         draw_lrtb_rectangle_filled(0, SCREEN_WIDTH, SCREEN_HEIGHT, 0,
                                    color.BABY_BLUE + (175,))
