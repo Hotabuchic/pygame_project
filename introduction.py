@@ -30,7 +30,8 @@ class IntroductionView(View):
         self.background.draw()
         draw_text(database.get_data("dictionary",
                                     language,
-                                    "russian = 'Нажмите любую кнопку чтобы продолжить'")[0][0],
+                                    "russian = 'Нажмите любую кнопку"
+                                    " чтобы продолжить'")[0][0],
                   SCREEN_WIDTH // 2,
                   100,
                   color.RED,

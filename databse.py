@@ -5,7 +5,8 @@ class DataBase:
     def __init__(self, name_database="database.db"):
         self.name_database = name_database
 
-    def get_data(self, name_tables, name_data="*", criterion="", data_criterion=None):
+    def get_data(self, name_tables, name_data="*", criterion="",
+                 data_criterion=None):
         self.con = connect(self.name_database)
         self.cur = self.con.cursor()
 
@@ -48,7 +49,8 @@ class DataBase:
         if data_criterion is None:
             self.cur.execute(f"UPDATE {name_tables} SET {col}")
         else:
-            self.cur.execute(f"UPDATE {name_tables} SET {col} WHERE {data_criterion}")
+            self.cur.execute(f"UPDATE {name_tables} SET {col}"
+                             f" WHERE {data_criterion}")
 
         self.con.commit()
         self.con.close()

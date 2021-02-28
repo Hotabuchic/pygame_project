@@ -59,7 +59,8 @@ class VerticalEnemy(Sprite):
 class Player(Sprite):
     def __init__(self, path_to_textures):
         super(Player, self).__init__(hit_box_algorithm="Detailed")
-        self.path_to_textures = ":resources:images/animated_characters/" + path_to_textures
+        self.path_to_textures = ":resources:images/animated_characters/" \
+                                + path_to_textures
         self.textures = [load_texture(f"{self.path_to_textures}_idle.png"),
                          load_texture(f"{self.path_to_textures}_walk5.png"),
                          load_texture(f"{self.path_to_textures}_walk5.png",

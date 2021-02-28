@@ -63,7 +63,8 @@ class MainMenuView(View):
 
         btn_new = UIFlatButton(database.get_data("dictionary",
                                                  language,
-                                                 "russian = 'Новая игра'")[0][0],
+                                                 "russian = 'Новая"
+                                                 " игра'")[0][0],
                                center_x=SCREEN_WIDTH // 2,
                                center_y=550,
                                height=100, width=300)
@@ -84,7 +85,8 @@ class MainMenuView(View):
 
         btn_resume = UIFlatButton(database.get_data("dictionary",
                                                     language,
-                                                    "russian = 'Продолжить'")[0][0],
+                                                    "russian = 'Продо"
+                                                    "лжить'")[0][0],
                                   center_x=SCREEN_WIDTH // 2,
                                   center_y=400,
                                   height=100, width=300)
@@ -105,7 +107,8 @@ class MainMenuView(View):
 
         btn_end = UIFlatButton(database.get_data("dictionary",
                                                  language,
-                                                 "russian = 'Выйти из игры'")[0][0],
+                                                 "russian = 'Выйти"
+                                                 " из игры'")[0][0],
                                center_x=SCREEN_WIDTH // 2,
                                center_y=250,
                                height=100, width=300)
@@ -132,8 +135,10 @@ class MainMenuView(View):
 
         btn_instruction = UIImageButton(center_x=50,
                                         center_y=45,
-                                        normal_texture=load_texture(INSTRUCTION_IMAGE),
-                                        press_texture=load_texture(INSTRUCTION_IMAGE_2))
+                                        normal_texture=load_texture(
+                                            INSTRUCTION_IMAGE),
+                                        press_texture=load_texture(
+                                            INSTRUCTION_IMAGE_2))
         btn_instruction.set_handler("on_click", self.instruction)
         self.ui_manager.add_ui_element(btn_instruction)
 
@@ -190,9 +195,11 @@ class MainMenuView(View):
         self.background.draw()
         self.coin.draw()
         self.star.draw()
-        draw_text(str(count_coins), SCREEN_WIDTH - 80, SCREEN_HEIGHT - 82, anchor_x="right",
+        draw_text(str(count_coins), SCREEN_WIDTH - 80, SCREEN_HEIGHT - 82,
+                  anchor_x="right",
                   color=color.WHITE, font_size=60, bold=True)
-        draw_text(str(count_stars), SCREEN_WIDTH - 80, SCREEN_HEIGHT - 165, anchor_x="right",
+        draw_text(str(count_stars), SCREEN_WIDTH - 80, SCREEN_HEIGHT - 165,
+                  anchor_x="right",
                   color=color.WHITE, font_size=60, bold=True)
         self.cursor.draw()
 
@@ -232,7 +239,8 @@ class SettingsView(View):
 
         text_level = UILabel(database.get_data("dictionary",
                                                language,
-                                               "russian = 'Выбор уровня сложности:'")[0][0],
+                                               "russian = 'Выбор уровня "
+                                               "сложности:'")[0][0],
                              center_x=SCREEN_WIDTH // 2,
                              center_y=SCREEN_HEIGHT - 220)
         text_level.set_style_attrs(font_color=color.BABY_BLUE, font_size=30)
@@ -240,15 +248,18 @@ class SettingsView(View):
 
         text_language = UILabel(database.get_data("dictionary",
                                                   language,
-                                                  "russian = 'Выбор языка:'")[0][0],
+                                                  "russian = 'Выбор "
+                                                  "языка:'")[0][0],
                                 center_x=SCREEN_WIDTH // 2,
                                 center_y=SCREEN_HEIGHT - 600)
-        text_language.set_style_attrs(font_color=color.BABY_BLUE, font_size=30)
+        text_language.set_style_attrs(font_color=color.BABY_BLUE,
+                                      font_size=30)
         self.ui_manager.add_ui_element(text_language)
 
         level_easy = UIFlatButton(database.get_data("dictionary",
                                                     language,
-                                                    "russian = 'Лёгкий'")[0][0],
+                                                    "russian = 'Лёг"
+                                                    "кий'")[0][0],
                                   center_x=200, center_y=SCREEN_HEIGHT - 325,
                                   width=180, height=100)
         level_easy.set_handler("on_click", self.easy)
@@ -268,8 +279,10 @@ class SettingsView(View):
 
         level_medium = UIFlatButton(database.get_data("dictionary",
                                                       language,
-                                                      "russian = 'Средний'")[0][0],
-                                    center_x=400, center_y=SCREEN_HEIGHT - 325,
+                                                      "russian = 'Сре"
+                                                      "дний'")[0][0],
+                                    center_x=400,
+                                    center_y=SCREEN_HEIGHT - 325,
                                     width=180, height=100)
         level_medium.set_handler("on_click", self.medium)
         level_medium.set_style_attrs(
@@ -288,7 +301,8 @@ class SettingsView(View):
 
         level_hard = UIFlatButton(database.get_data("dictionary",
                                                     language,
-                                                    "russian = 'Сложный'")[0][0],
+                                                    "russian = 'Сло"
+                                                    "жный'")[0][0],
                                   center_x=600, center_y=SCREEN_HEIGHT - 325,
                                   width=180, height=100)
         level_hard.set_handler("on_click", self.hard)
@@ -313,8 +327,10 @@ class SettingsView(View):
         self.ui_manager.add_ui_element(btn_russia)
 
         btn_english = UIImageButton(center_x=500, center_y=100,
-                                    normal_texture=load_texture(ENGLISH_IMAGE),
-                                    press_texture=load_texture(ENGLISH_IMAGE_2))
+                                    normal_texture=load_texture(
+                                        ENGLISH_IMAGE),
+                                    press_texture=load_texture(
+                                        ENGLISH_IMAGE_2))
         btn_english.set_handler("on_click", self.english)
         self.ui_manager.add_ui_element(btn_english)
 
@@ -367,9 +383,11 @@ class SettingsView(View):
         self.background.draw()
         self.coin.draw()
         self.star.draw()
-        draw_text(str(count_coins), SCREEN_WIDTH - 80, SCREEN_HEIGHT - 82, anchor_x="right",
+        draw_text(str(count_coins), SCREEN_WIDTH - 80, SCREEN_HEIGHT - 82,
+                  anchor_x="right",
                   color=color.WHITE, font_size=60, bold=True)
-        draw_text(str(count_stars), SCREEN_WIDTH - 80, SCREEN_HEIGHT - 165, anchor_x="right",
+        draw_text(str(count_stars), SCREEN_WIDTH - 80, SCREEN_HEIGHT - 165,
+                  anchor_x="right",
                   color=color.WHITE, font_size=60, bold=True)
         draw_text(database.get_data("dictionary",
                                     language,
@@ -380,7 +398,8 @@ class SettingsView(View):
                   font_size=34)
         draw_text(database.get_data("dictionary",
                                     language,
-                                    f"russian = '{level} уровень сложности'")[0][0],
+                                    f"russian = '{level} уровень"
+                                    f" сложности'")[0][0],
                   150,
                   268,
                   color=color.BABY_BLUE,
@@ -407,7 +426,8 @@ class NewGameView(View):
 
         text = UILabel(database.get_data("dictionary",
                                          language,
-                                         "russian = 'Вы точно хотите начать новую игру?'")[0][0],
+                                         "russian = 'Вы точно хотите"
+                                         " начать новую игру?'")[0][0],
                        center_x=SCREEN_WIDTH // 2,
                        center_y=SCREEN_HEIGHT - 100)
         text.set_style_attrs(font_color=color.BABY_BLUE, font_size=30)
@@ -435,8 +455,10 @@ class NewGameView(View):
 
         btn_cancel = UIFlatButton(database.get_data("dictionary",
                                                     language,
-                                                    "russian = 'Отмена'")[0][0],
-                                  center_x=575, center_y=SCREEN_HEIGHT // 2 - 75,
+                                                    "russian = 'Отме"
+                                                    "на'")[0][0],
+                                  center_x=575,
+                                  center_y=SCREEN_HEIGHT // 2 - 75,
                                   width=225, height=100)
         btn_cancel.set_handler("on_click", self.cancel)
         btn_cancel.set_style_attrs(
@@ -456,9 +478,11 @@ class NewGameView(View):
     def ok(self):
         global count_coins, count_stars, all_levels, all_person, player
         self.btn_2.play(1.25)
-        database.change_data("levels", "completed = 'False', all_coins = '+++', time = 'False'")
+        database.change_data("levels", "completed = 'False',"
+                                       " all_coins = '+++', time = 'False'")
         database.change_data("persons", "received = 'False'", "id > 1")
-        database.change_data("player_info", "person_id = 1, current_level = 'лёгкий', count_coins = 0")
+        database.change_data("player_info", "person_id = 1, current_level"
+                                            " = 'лёгкий', count_coins = 0")
         count_coins = database.get_data("player_info", "count_coins")[0][0]
         count_stars = think_stars(database.get_data("levels", "completed"))
         all_levels = database.get_data("levels")
@@ -483,11 +507,13 @@ class NewGameView(View):
         self.background.draw()
         draw_text(database.get_data("dictionary",
                                     language,
-                                    "russian = 'Если вы начнёте новую игру,'")[0][0],
+                                    "russian = 'Если вы начнёте"
+                                    " новую игру,'")[0][0],
                   start_x=125, start_y=520, color=color.RED, font_size=30)
         draw_text(database.get_data("dictionary",
                                     language,
-                                    "russian = 'то потеряете весь текущий прогресс!'")[0][0],
+                                    "russian = 'то потеряете "
+                                    "весь текущий прогресс!'")[0][0],
                   start_x=125, start_y=487, color=color.RED, font_size=30)
         self.cursor.draw()
 
@@ -525,12 +551,15 @@ class LevelsMenuView(View):
         self.ui_manager.add_ui_element(btn_exit)
 
         btn_left = UIImageButton(center_x=50, center_y=SCREEN_HEIGHT // 2,
-                                 normal_texture=load_texture(ARROW, flipped_horizontally=True),
-                                 press_texture=load_texture(ARROW2, flipped_horizontally=True))
+                                 normal_texture=load_texture(
+                                     ARROW, flipped_horizontally=True),
+                                 press_texture=load_texture(
+                                     ARROW2, flipped_horizontally=True))
         btn_left.set_handler("on_click", self.left)
         self.ui_manager.add_ui_element(btn_left)
 
-        btn_right = UIImageButton(center_x=SCREEN_WIDTH - 50, center_y=SCREEN_HEIGHT // 2,
+        btn_right = UIImageButton(center_x=SCREEN_WIDTH - 50,
+                                  center_y=SCREEN_HEIGHT // 2,
                                   normal_texture=load_texture(ARROW),
                                   press_texture=load_texture(ARROW2))
         btn_right.set_handler("on_click", self.right)
@@ -627,21 +656,27 @@ class LevelsMenuView(View):
         self.first_star.draw()
         self.second_star.draw()
         self.third_star.draw()
-        draw_text(str(count_coins), SCREEN_WIDTH - 80, SCREEN_HEIGHT - 82, anchor_x="right",
+        draw_text(str(count_coins), SCREEN_WIDTH - 80,
+                  SCREEN_HEIGHT - 82, anchor_x="right",
                   color=color.WHITE, font_size=60, bold=True)
-        draw_text(str(count_stars), SCREEN_WIDTH - 80, SCREEN_HEIGHT - 165, anchor_x="right",
+        draw_text(str(count_stars), SCREEN_WIDTH - 80,
+                  SCREEN_HEIGHT - 165, anchor_x="right",
                   color=color.WHITE, font_size=60, bold=True)
-        draw_text(all_levels[self.num_level][1], start_x=SCREEN_WIDTH // 2, start_y=SCREEN_HEIGHT - 200,
-                  anchor_x="center", color=color.ORANGE, font_size=44, font_name="")
+        draw_text(all_levels[self.num_level][1],
+                  start_x=SCREEN_WIDTH // 2, start_y=SCREEN_HEIGHT - 200,
+                  anchor_x="center", color=color.ORANGE,
+                  font_size=44, font_name="")
         count = all_levels[self.num_level][4].count("-")
         textt = database.get_data("dictionary",
                                   language,
-                                  "russian = 'Собрано монет на уровне:'")[0][0]
+                                  "russian = 'Собрано монет "
+                                  "на уровне:'")[0][0]
         text = f"{textt} {count}"
         if count == 3:
             text = database.get_data("dictionary",
                                      language,
-                                     "russian = 'На уровне уже собраны все монеты'")[0][0]
+                                     "russian = 'На уровне уже"
+                                     " собраны все монеты'")[0][0]
         draw_text(text=text,
                   start_x=SCREEN_WIDTH // 2,
                   start_y=SCREEN_HEIGHT - 260,
@@ -729,14 +764,16 @@ class GameView(View):
                 if column in ".@123OEV":
                     floor = Sprite(self.floor_image,
                                    center_x=x * TILE_SIZE + TILE_SIZE // 2,
-                                   center_y=(len(self.level) - y - 1) * TILE_SIZE + TILE_SIZE // 2,
+                                   center_y=(len(self.level) - y - 1)
+                                            * TILE_SIZE + TILE_SIZE // 2,
                                    scale=self.scale_floor)
                     self.floors.append(floor)
                     self.all_sprites.append(floor)
                 elif column == "#":
                     wall = Sprite(self.wall_image,
                                   center_x=x * TILE_SIZE + TILE_SIZE // 2,
-                                  center_y=(len(self.level) - y - 1) * TILE_SIZE + TILE_SIZE // 2,
+                                  center_y=(len(self.level) - y - 1)
+                                           * TILE_SIZE + TILE_SIZE // 2,
                                   scale=self.scale_wall)
                     self.walls.append(wall)
                     self.all_sprites.append(wall)
@@ -745,8 +782,11 @@ class GameView(View):
             for x, column in enumerate(string):
                 if column == "E":
                     self.exitt = Sprite(EXIT_IMAGE,
-                                        center_x=x * TILE_SIZE + TILE_SIZE // 2,
-                                        center_y=(len(self.level) - y - 1) * TILE_SIZE + TILE_SIZE // 2.2,
+                                        center_x=x * TILE_SIZE
+                                                 + TILE_SIZE // 2,
+                                        center_y=(len(self.level) - y - 1)
+                                                 * TILE_SIZE
+                                                 + TILE_SIZE // 2.2,
                                         scale=0.35)
                     self.all_sprites.append(self.exitt)
                 elif column in "123":
@@ -758,7 +798,8 @@ class GameView(View):
                                 load_texture(COIN_IMAGE_2, mirrored=True)]
                     coin = Coin(textures)
                     coin.center_x = x * TILE_SIZE + TILE_SIZE // 2
-                    coin.center_y = (len(self.level) - y - 1) * TILE_SIZE + TILE_SIZE // 2
+                    coin.center_y = (len(self.level) - y - 1) \
+                                    * TILE_SIZE + TILE_SIZE // 2
                     coin.scale = 0.7
                     self.coins_list.append(int(column))
                     self.coins.append(coin)
@@ -768,25 +809,29 @@ class GameView(View):
                                              mirrored=True) for i in range(8)]
                     enemy = Enemy(textures, True, -5)
                     enemy.center_x = x * TILE_SIZE + TILE_SIZE // 2
-                    enemy.center_y = (len(self.level) - y - 1) * TILE_SIZE + TILE_SIZE // 2 + 5
+                    enemy.center_y = (len(self.level) - y - 1) \
+                                     * TILE_SIZE + TILE_SIZE // 2 + 5
                     enemy.scale = 0.45
                     self.horizontal_enemies.append(enemy)
                     self.all_sprites.append(enemy)
                 elif column == "V":
                     enemy = VerticalEnemy(f"{ENEMY_IMAGE}_idle.png", 1)
                     enemy.center_x = x * TILE_SIZE + TILE_SIZE // 2
-                    enemy.center_y = (len(self.level) - y - 1) * TILE_SIZE + TILE_SIZE // 2 + 5
+                    enemy.center_y = (len(self.level) - y - 1) \
+                                     * TILE_SIZE + TILE_SIZE // 2 + 5
                     enemy.scale = 0.45
                     self.vertical_enemies.append(enemy)
                     self.all_sprites.append(enemy)
                 elif column == "@":
                     self.player = Player(path_to_textures=player)
                     self.player.center_x = x * TILE_SIZE + TILE_SIZE // 2
-                    self.player.center_y = (len(self.level) - y - 1) * TILE_SIZE + TILE_SIZE // 2 + 5
+                    self.player.center_y = (len(self.level) - y - 1) \
+                                           * TILE_SIZE + TILE_SIZE // 2 + 5
                     self.player.scale = 0.45
                     self.all_sprites.append(self.player)
                     self.light = Light(x * TILE_SIZE + TILE_SIZE // 2,
-                                       (len(self.level) - y - 1) * TILE_SIZE + TILE_SIZE // 2,
+                                       (len(self.level) - y - 1)
+                                       * TILE_SIZE + TILE_SIZE // 2,
                                        150, color.WHITE, 'soft')
                     self.light_layer.add(self.light)
 
@@ -796,22 +841,26 @@ class GameView(View):
             self.window.show_view(view)
         elif symbol == key.LEFT:
             self.player.center_x -= 50
-            if self.player.collides_with_list(self.walls) or self.player.left <= 0:
+            if self.player.collides_with_list(self.walls) \
+                    or self.player.left <= 0:
                 self.player.center_x += 50
             self.player.index(2)
         elif symbol == key.RIGHT:
             self.player.center_x += 50
-            if self.player.collides_with_list(self.walls) or self.player.right >= SCREEN_WIDTH:
+            if self.player.collides_with_list(self.walls) \
+                    or self.player.right >= SCREEN_WIDTH:
                 self.player.center_x -= 50
             self.player.index(1)
         elif symbol == key.UP:
             self.player.center_y += 50
-            if self.player.collides_with_list(self.walls) or self.player.top >= SCREEN_HEIGHT - 50:
+            if self.player.collides_with_list(self.walls) \
+                    or self.player.top >= SCREEN_HEIGHT - 50:
                 self.player.center_y -= 50
             self.player.index(3)
         elif symbol == key.DOWN:
             self.player.center_y -= 50
-            if self.player.collides_with_list(self.walls) or self.player.bottom <= 0:
+            if self.player.collides_with_list(self.walls) \
+                    or self.player.bottom <= 0:
                 self.player.center_y += 50
             self.player.index(0)
 
@@ -834,7 +883,8 @@ class GameView(View):
         self.player.update()
         self.light.position = self.player.position
         if self.player.collides_with_sprite(self.exitt):
-            if help_dict_for_stars[level] >= help_dict_for_stars[self.completed]:
+            if help_dict_for_stars[level] >= \
+                    help_dict_for_stars[self.completed]:
                 database.change_data("levels",
                                      f"completed = '{level}'",
                                      data_criterion=f"id = {self.id}")
@@ -896,7 +946,8 @@ class GameView(View):
                 mirrored, center_x, center_y, speed = enemy.data()
                 enemy.kill()
                 textures = [load_texture(f"{ENEMY_IMAGE}_walk{i}.png",
-                                         mirrored=not mirrored) for i in range(8)]
+                                         mirrored=not mirrored)
+                            for i in range(8)]
                 enemy = Enemy(textures, not mirrored, -speed)
                 if mirrored:
                     center_x += 8
@@ -922,13 +973,15 @@ class GameView(View):
         start_render()
         with self.light_layer:
             self.all_sprites.draw()
-        self.light_layer.draw(ambient_color=(5, 5, 5))
+        self.light_layer.draw(ambient_color=(10, 10, 10))
         draw_text(f"{self.text} {self.count_coin}",
                   start_x=25, start_y=SCREEN_HEIGHT - 40,
                   color=color.ORANGE, font_size=24)
         millis = str(round(self.time_level % 1, 2))[2:]
-        draw_text(f"{int(self.time_level // 60)}:{floor(self.time_level % 60)}:{millis}",
-                  SCREEN_WIDTH // 2 - 50, SCREEN_HEIGHT - 45, color=color.WHITE, font_size=30)
+        draw_text(f"{int(self.time_level // 60)}:"
+                  f"{floor(self.time_level % 60)}:{millis}",
+                  SCREEN_WIDTH // 2 - 50, SCREEN_HEIGHT - 45,
+                  color=color.WHITE, font_size=30)
         self.hearts.draw()
 
 
@@ -942,16 +995,20 @@ class PauseView(View):
                                         "russian = 'ПАУЗА'")[0][0]
         self.text_2 = database.get_data("dictionary",
                                         language,
-                                        "russian = 'Нажмите Enter, чтобы вернуться в меню.'")[0][0]
+                                        "russian = 'Нажмите Enter,"
+                                        " чтобы вернуться в меню.'")[0][0]
         self.text_3 = database.get_data("dictionary",
                                         language,
-                                        "russian = 'Весь прогресс будет потерян!'")[0][0]
+                                        "russian = 'Весь прогресс"
+                                        " будет потерян!'")[0][0]
         self.text_4 = database.get_data("dictionary",
                                         language,
-                                        "russian = 'Нажмите Esc, чтобы вернуться в игру.'")[0][0]
+                                        "russian = 'Нажмите Esc,"
+                                        " чтобы вернуться в игру.'")[0][0]
         self.text_5 = database.get_data("dictionary",
                                         language,
-                                        "russian = 'Нажмите R, чтобы перезапустить уровень.'")[0][0]
+                                        "russian = 'Нажмите R, чтобы"
+                                        " перезапустить уровень.'")[0][0]
 
     def on_show(self):
         set_viewport(0, SCREEN_WIDTH - 1, 0, SCREEN_HEIGHT - 1)
@@ -961,13 +1018,15 @@ class PauseView(View):
 
         with self.game_view.light_layer:
             self.game_view.all_sprites.draw()
-        self.game_view.light_layer.draw(ambient_color=(5, 5, 5))
+        self.game_view.light_layer.draw(ambient_color=(10, 10, 10))
         draw_text(f"{self.game_view.text} {self.game_view.count_coin}",
                   start_x=25, start_y=SCREEN_HEIGHT - 40,
                   color=color.ORANGE, font_size=24)
         millis = str(round(self.game_view.time_level % 1, 2))[2:]
-        draw_text(f"{int(self.game_view.time_level // 60)}:{floor(self.game_view.time_level % 60)}:{millis}",
-                  SCREEN_WIDTH // 2 - 50, SCREEN_HEIGHT - 45, color=color.WHITE, font_size=30)
+        draw_text(f"{int(self.game_view.time_level // 60)}:"
+                  f"{floor(self.game_view.time_level % 60)}:{millis}",
+                  SCREEN_WIDTH // 2 - 50, SCREEN_HEIGHT - 45,
+                  color=color.WHITE, font_size=30)
         self.game_view.hearts.draw()
 
         draw_lrtb_rectangle_filled(0, SCREEN_WIDTH, SCREEN_HEIGHT, 0,
@@ -1024,10 +1083,12 @@ class GameEndView(View):
                                         "russian = 'ПРОИГРЫШ'")[0][0]
         self.text_2 = database.get_data("dictionary",
                                         language,
-                                        "russian = 'Нажмите Enter, чтобы вернуться в меню.'")[0][0]
+                                        "russian = 'Нажмите Enter, чтобы"
+                                        " вернуться в меню.'")[0][0]
         self.text_3 = database.get_data("dictionary",
                                         language,
-                                        "russian = 'Нажмите R, чтобы перезапустить уровень.'")[0][0]
+                                        "russian = 'Нажмите R, чтобы"
+                                        " перезапустить уровень.'")[0][0]
 
     def on_show(self):
         set_viewport(0, SCREEN_WIDTH - 1, 0, SCREEN_HEIGHT - 1)
@@ -1081,19 +1142,24 @@ class GameWinView(View):
                                         "russian = 'ПОБЕДА'")[0][0]
         self.text_4 = database.get_data("dictionary",
                                         language,
-                                        "russian = 'Нажмите Enter, чтобы вернуться в меню.'")[0][0]
+                                        "russian = 'Нажмите Enter, чтобы"
+                                        " вернуться в меню.'")[0][0]
         self.text_5 = database.get_data("dictionary",
                                         language,
-                                        "russian = 'Нажмите R, чтобы перезапустить уровень.'")[0][0]
+                                        "russian = 'Нажмите R, чтобы"
+                                        " перезапустить уровень.'")[0][0]
         self.text_6 = database.get_data("dictionary",
                                         language,
-                                        "russian = 'Уровень пройден на уровне сложности -'")[0][0]
+                                        "russian = 'Уровень пройден"
+                                        " на уровне сложности -'")[0][0]
         self.text_7 = database.get_data("dictionary",
                                         language,
-                                        f"russian = '{level.capitalize()}'")[0][0]
+                                        f"russian = "
+                                        f"'{level.capitalize()}'")[0][0]
         self.text_8 = database.get_data("dictionary",
                                         language,
-                                        "russian = 'Время прохождения -'")[0][0]
+                                        "russian = 'Время "
+                                        "прохождения -'")[0][0]
         self.millis = str(round(self.game_view.time_level % 1, 2))[2:]
 
     def on_show(self):
@@ -1163,27 +1229,32 @@ class InstructionView(View):
         self.btn_instruction = SETTINGS_SOUND
         self.text_1 = database.get_data("dictionary",
                                         language,
-                                        "russian = '- игра с множеством уровней,'")[0][0]
+                                        "russian = '- игра с "
+                                        "множеством уровней,'")[0][0]
         self.text_2 = database.get_data("dictionary",
                                         language,
-                                        "russian = 'для прохождения которых нужно выйти из лабиринта.'")[0][0]
+                                        "russian = 'для прохождения которых"
+                                        " нужно выйти из лабиринта.'")[0][0]
         text = 'На один уровень у вас есть 3 "сердчека" - жизни.'
         self.text_3 = database.get_data("dictionary",
                                         language,
                                         f"russian = '{text}'")[0][0]
         self.text_4 = database.get_data("dictionary",
                                         language,
-                                        "russian = 'В зависимости от уровня сложности'")[0][0]
+                                        "russian = 'В зависимости "
+                                        "от уровня сложности'")[0][0]
         self.text_5 = database.get_data("dictionary",
                                         language,
-                                        "russian = 'противники в лабиринте наносят разный урон.'")[0][0]
+                                        "russian = 'противники в лабиринте"
+                                        " наносят разный урон.'")[0][0]
         text_2 = 'Если "сердечки" закончатся -'
         self.text_6 = database.get_data("dictionary",
                                         language,
                                         f"russian = '{text_2}'")[0][0]
         self.text_7 = database.get_data("dictionary",
                                         language,
-                                        "russian = 'вы потеряете весь прогресс на данном уровне.'")[0][0]
+                                        "russian = 'вы потеряете весь"
+                                        " прогресс на данном уровне.'")[0][0]
 
     def setup(self):
         self.ui_manager.purge_ui_elements()
@@ -1198,8 +1269,10 @@ class InstructionView(View):
 
         btn_instruction = UIImageButton(center_x=50,
                                         center_y=45,
-                                        normal_texture=load_texture(INSTRUCTION_IMAGE),
-                                        press_texture=load_texture(INSTRUCTION_IMAGE_2))
+                                        normal_texture=load_texture(
+                                            INSTRUCTION_IMAGE),
+                                        press_texture=load_texture(
+                                            INSTRUCTION_IMAGE_2))
         btn_instruction.set_handler("on_click", self.instruction)
         self.ui_manager.add_ui_element(btn_instruction)
 
@@ -1303,12 +1376,15 @@ class ShopView(View):
         self.ui_manager.purge_ui_elements()
 
         btn_left = UIImageButton(center_x=50, center_y=SCREEN_HEIGHT // 2,
-                                 normal_texture=load_texture(ARROW, flipped_horizontally=True),
-                                 press_texture=load_texture(ARROW2, flipped_horizontally=True))
+                                 normal_texture=load_texture(
+                                     ARROW, flipped_horizontally=True),
+                                 press_texture=load_texture(
+                                     ARROW2, flipped_horizontally=True))
         btn_left.set_handler("on_click", self.left)
         self.ui_manager.add_ui_element(btn_left)
 
-        btn_right = UIImageButton(center_x=SCREEN_WIDTH - 50, center_y=SCREEN_HEIGHT // 2,
+        btn_right = UIImageButton(center_x=SCREEN_WIDTH - 50,
+                                  center_y=SCREEN_HEIGHT // 2,
                                   normal_texture=load_texture(ARROW),
                                   press_texture=load_texture(ARROW2))
         btn_right.set_handler("on_click", self.right)
@@ -1323,7 +1399,9 @@ class ShopView(View):
 
         text = UILabel(database.get_data("dictionary",
                                          language,
-                                         f"russian = '{all_person[self.num_person][1]}'")[0][0],
+                                         f"russian = "
+                                         f"'{all_person[self.num_person][1]}'")
+                       [0][0],
                        center_x=SCREEN_WIDTH // 2,
                        center_y=SCREEN_HEIGHT - 120)
         text.set_style_attrs(font_color=color.BABY_BLUE, font_size=54)
@@ -1341,7 +1419,9 @@ class ShopView(View):
             if all_person[self.num_person][4] == "True":
                 btn_select = UIFlatButton(database.get_data("dictionary",
                                                             language,
-                                                            "russian = 'Выбрать'")[0][0],
+                                                            "russian ="
+                                                            " 'Выбрать'")
+                                          [0][0],
                                           center_x=SCREEN_WIDTH // 2,
                                           center_y=SCREEN_HEIGHT // 2 - 270,
                                           height=120, width=250)
@@ -1376,7 +1456,8 @@ class ShopView(View):
 
                 btn_buy = UIFlatButton(database.get_data("dictionary",
                                                          language,
-                                                         "russian = 'Купить'")[0][0],
+                                                         "russian = 'Купить'")
+                                       [0][0],
                                        center_x=SCREEN_WIDTH // 2,
                                        center_y=SCREEN_HEIGHT // 2 - 270,
                                        height=120, width=250)
@@ -1398,7 +1479,8 @@ class ShopView(View):
     def select(self):
         global player
         self.person.play()
-        database.change_data("player_info", f"person_id = {all_person[self.num_person][0]}")
+        database.change_data("player_info",
+                             f"person_id = {all_person[self.num_person][0]}")
         player = database.get_data("player_info, persons",
                                    "persons.path",
                                    "player_info.person_id = persons.id")[0][0]
@@ -1409,15 +1491,18 @@ class ShopView(View):
         if count_coins >= all_person[self.num_person][3]:
             self.person.play()
             count_coins -= all_person[self.num_person][3]
-            database.change_data("player_info", f"count_coins = {count_coins}")
+            database.change_data("player_info",
+                                 f"count_coins = {count_coins}")
             database.change_data("persons", "received = 'True'",
                                  f"id = {all_person[self.num_person][0]}")
             database.change_data("player_info",
-                                 f"person_id = {all_person[self.num_person][0]}")
+                                 f"person_id = "
+                                 f"{all_person[self.num_person][0]}")
             all_person = database.get_data("persons")
             player = database.get_data("player_info, persons",
                                        "persons.path",
-                                       "player_info.person_id = persons.id")[0][0]
+                                       "player_info.person_id "
+                                       "= persons.id")[0][0]
             self.setup()
         else:
             self.time_buy = 0
@@ -1473,14 +1558,17 @@ class ShopView(View):
         self.background.draw()
         self.coin.draw()
         self.star.draw()
-        draw_text(str(count_coins), SCREEN_WIDTH - 80, SCREEN_HEIGHT - 82, anchor_x="right",
+        draw_text(str(count_coins), SCREEN_WIDTH - 80, SCREEN_HEIGHT - 82,
+                  anchor_x="right",
                   color=color.WHITE, font_size=60, bold=True)
-        draw_text(str(count_stars), SCREEN_WIDTH - 80, SCREEN_HEIGHT - 165, anchor_x="right",
+        draw_text(str(count_stars), SCREEN_WIDTH - 80, SCREEN_HEIGHT - 165,
+                  anchor_x="right",
                   color=color.WHITE, font_size=60, bold=True)
         if self.time_buy < 3:
             draw_text(database.get_data("dictionary",
                                         language,
-                                        "russian = 'Недостаточно монет!'")[0][0],
+                                        "russian = 'Недостаточно монет!'")
+                      [0][0],
                       SCREEN_WIDTH // 2, SCREEN_HEIGHT - 80,
                       anchor_x="center",
                       color=color.RED, font_size=40, bold=True)
