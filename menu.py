@@ -873,65 +873,39 @@ class GameView(View):
         new_time = time[0] * 60 + time[1] + time[2] / 100
         return new_time
 
-    def on_update(self, delta_time: float):
-        global all_levels, count_coins, count_stars
-        self.time_level += delta_time
-        self.time_after_hit += delta_time
-        self.coins.update()
-        self.vertical_enemies.update()
-        self.horizontal_enemies.update()
-        self.player.update()
-        self.light.position = self.player.position
-        if self.player.collides_with_sprite(self.exitt):
-            if help_dict_for_stars[level] >= \
-                    help_dict_for_stars[self.completed]:
+    def win(self):
+        global count_coins, all_levels, count_stars
+        if help_dict_for_stars[level] >= \
+                help_dict_for_stars[self.completed]:
+            database.change_data("levels",
+                                 f"completed = '{level}'",
+                                 data_criterion=f"id = {self.id}")
+            if len(self.get_coin) > self.level_coins.count("-"):
+                x = len(self.get_coin) - self.level_coins.count("-")
+                for i in self.get_coin:
+                    self.level_coins[i - 1] = "-"
                 database.change_data("levels",
-                                     f"completed = '{level}'",
+                                     f"all_coins = '{''.join(self.level_coins)}'",
                                      data_criterion=f"id = {self.id}")
-                if len(self.get_coin) > self.level_coins.count("-"):
-                    x = len(self.get_coin) - self.level_coins.count("-")
-                    for i in self.get_coin:
-                        self.level_coins[i - 1] = "-"
-                    database.change_data("levels",
-                                         f"all_coins = '{''.join(self.level_coins)}'",
-                                         data_criterion=f"id = {self.id}")
-                    count_coins += x
-                    database.change_data("player_info", f"count_coins = {count_coins}")
-            time_old = database.get_data("levels", "time", data_criterion=f"id = {self.id}")[0][0]
-            millis = str(round(self.time_level % 1, 2))[2:]
-            if time_old == "False" \
-                    or self.to_sec(f"{int(self.time_level // 60)}:{floor(self.time_level % 60)}:{millis}") \
-                    < self.to_sec(time_old):
-                database.change_data("levels",
-                                     f"time = '{int(self.time_level // 60)}:{floor(self.time_level % 60)}:{millis}'",
-                                     data_criterion=f"id = {self.id}")
-            all_levels = database.get_data("levels")
-            count_stars = think_stars(database.get_data("levels", "completed"))
-            self.data_level = all_levels[int(self.id) - 1]
-            self.off_music()
-            self.win_sound.play()
-            view = GameWinView(self, self.data_level)
-            self.window.show_view(view)
-        if self.player.collides_with_list(self.vertical_enemies) \
-                or self.player.collides_with_list(self.horizontal_enemies):
-            if self.time_after_hit >= 0.7:
-                for i in range(self.count_hit):
-                    if self.hearts:
-                        self.hearts[-1].kill()
-                self.hit_sound.play()
-                self.time_after_hit = 0
-                if not self.hearts:
-                    self.off_music()
-                    self.died_sound.play()
-                    view = GameEndView(self, self.data_level)
-                    self.window.show_view(view)
-        for i, coin in enumerate(self.coins):
-            if self.player.collides_with_sprite(coin):
-                self.coin_sound.play()
-                self.count_coin += 1
-                self.get_coin.append(self.coins_list[i])
-                del self.coins_list[i]
-                coin.kill()
+                count_coins += x
+                database.change_data("player_info", f"count_coins = {count_coins}")
+        time_old = database.get_data("levels", "time", data_criterion=f"id = {self.id}")[0][0]
+        millis = str(round(self.time_level % 1, 2))[2:]
+        if time_old == "False" \
+                or self.to_sec(f"{int(self.time_level // 60)}:{floor(self.time_level % 60)}:{millis}") \
+                < self.to_sec(time_old):
+            database.change_data("levels",
+                                 f"time = '{int(self.time_level // 60)}:{floor(self.time_level % 60)}:{millis}'",
+                                 data_criterion=f"id = {self.id}")
+        all_levels = database.get_data("levels")
+        count_stars = think_stars(database.get_data("levels", "completed"))
+        self.data_level = all_levels[int(self.id) - 1]
+        self.off_music()
+        self.win_sound.play()
+        view = GameWinView(self, self.data_level)
+        self.window.show_view(view)
+
+    def check_enemy(self):
         for enemy in self.vertical_enemies:
             if enemy.collides_with_list(self.walls) \
                     or enemy.bottom < 0 \
@@ -958,6 +932,39 @@ class GameView(View):
                 enemy.scale = 0.45
                 self.horizontal_enemies.append(enemy)
                 self.all_sprites.append(enemy)
+
+    def on_update(self, delta_time: float):
+        global all_levels, count_coins, count_stars
+        self.time_level += delta_time
+        self.time_after_hit += delta_time
+        self.coins.update()
+        self.vertical_enemies.update()
+        self.horizontal_enemies.update()
+        self.player.update()
+        self.light.position = self.player.position
+        if self.player.collides_with_sprite(self.exitt):
+            self.win()
+        if self.player.collides_with_list(self.vertical_enemies) \
+                or self.player.collides_with_list(self.horizontal_enemies):
+            if self.time_after_hit >= 0.7:
+                for i in range(self.count_hit):
+                    if self.hearts:
+                        self.hearts[-1].kill()
+                self.hit_sound.play()
+                self.time_after_hit = 0
+                if not self.hearts:
+                    self.off_music()
+                    self.died_sound.play()
+                    view = GameEndView(self, self.data_level)
+                    self.window.show_view(view)
+        for i, coin in enumerate(self.coins):
+            if self.player.collides_with_sprite(coin):
+                self.coin_sound.play()
+                self.count_coin += 1
+                self.get_coin.append(self.coins_list[i])
+                del self.coins_list[i]
+                coin.kill()
+        self.check_enemy()
         position = self.music.get_stream_position(self.current_player)
         if position == 0.0:
             self.play_song()
@@ -1031,34 +1038,16 @@ class PauseView(View):
 
         draw_lrtb_rectangle_filled(0, SCREEN_WIDTH, SCREEN_HEIGHT, 0,
                                    color.BABY_BLUE + (175,))
-        draw_text(self.text_1,
-                  SCREEN_WIDTH / 2,
-                  SCREEN_HEIGHT / 2 + 150,
+        draw_text(self.text_1, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 150,
                   color.BLACK, font_size=50, anchor_x="center")
-        draw_text(self.text_2,
-                  SCREEN_WIDTH / 2,
-                  SCREEN_HEIGHT / 2,
-                  color.BLACK,
-                  font_size=24,
-                  anchor_x="center")
-        draw_text(self.text_3,
-                  SCREEN_WIDTH / 2,
-                  SCREEN_HEIGHT / 2 - 30,
-                  color.BLACK,
-                  font_size=24,
-                  anchor_x="center")
-        draw_text(self.text_4,
-                  SCREEN_WIDTH / 2,
-                  SCREEN_HEIGHT / 2 - 80,
-                  color.BLACK,
-                  font_size=24,
-                  anchor_x="center")
-        draw_text(self.text_5,
-                  SCREEN_WIDTH / 2,
-                  SCREEN_HEIGHT / 2 - 160,
-                  color.BLACK,
-                  font_size=24,
-                  anchor_x="center")
+        draw_text(self.text_2, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2,
+                  color.BLACK, font_size=24, anchor_x="center")
+        draw_text(self.text_3, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 - 30,
+                  color.BLACK, font_size=24, anchor_x="center")
+        draw_text(self.text_4, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 - 80,
+                  color.BLACK, font_size=24, anchor_x="center")
+        draw_text(self.text_5, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 - 160,
+                  color.BLACK, font_size=24, anchor_x="center")
 
     def on_key_press(self, symbol: int, modifiers: int):
         if symbol == key.ESCAPE:
@@ -1297,35 +1286,18 @@ class InstructionView(View):
         self.background.draw()
         self.coin.draw()
         self.star.draw()
-        draw_text(str(count_coins),
-                  SCREEN_WIDTH - 80,
-                  SCREEN_HEIGHT - 82,
-                  anchor_x="right",
-                  color=color.WHITE,
-                  font_size=60,
+        draw_text(str(count_coins), SCREEN_WIDTH - 80, SCREEN_HEIGHT - 82,
+                  anchor_x="right", color=color.WHITE, font_size=60,
                   bold=True)
-        draw_text(str(count_stars),
-                  SCREEN_WIDTH - 80,
-                  SCREEN_HEIGHT - 165,
-                  anchor_x="right",
-                  color=color.WHITE,
-                  font_size=60,
+        draw_text(str(count_stars), SCREEN_WIDTH - 80, SCREEN_HEIGHT - 165,
+                  anchor_x="right", color=color.WHITE, font_size=60,
                   bold=True)
-        draw_text(f"{SCREEN_TITLE} {self.text_1}",
-                  SCREEN_WIDTH // 2, 530,
-                  color=color.BABY_BLUE,
-                  font_size=24,
-                  anchor_x="center")
-        draw_text(self.text_2,
-                  SCREEN_WIDTH // 2, 500,
-                  color=color.BABY_BLUE,
-                  font_size=24,
-                  anchor_x="center")
-        draw_text(self.text_3,
-                  SCREEN_WIDTH // 2 + 80, 400,
-                  color=color.BABY_BLUE,
-                  font_size=24,
-                  anchor_x="center")
+        draw_text(f"{SCREEN_TITLE} {self.text_1}", SCREEN_WIDTH // 2, 530,
+                  color=color.BABY_BLUE, font_size=24, anchor_x="center")
+        draw_text(self.text_2, SCREEN_WIDTH // 2, 500,
+                  color=color.BABY_BLUE, font_size=24, anchor_x="center")
+        draw_text(self.text_3, SCREEN_WIDTH // 2 + 80, 400,
+                  color=color.BABY_BLUE, font_size=24, anchor_x="center")
         draw_text(self.text_4,
                   SCREEN_WIDTH // 2 + 80, 370,
                   color=color.BABY_BLUE,
