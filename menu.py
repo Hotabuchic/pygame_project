@@ -747,6 +747,8 @@ class GameView(View):
                                       "russian = 'Монет собрано:'")[0][0]
         self.light_layer = LightLayer(SCREEN_WIDTH, SCREEN_HEIGHT)
         self.light = None
+        self.time = 150
+        self.to_night = True
         self.setup()
 
     def setup(self):
@@ -833,7 +835,6 @@ class GameView(View):
                                        (len(self.level) - y - 1)
                                        * TILE_SIZE + TILE_SIZE // 2,
                                        150, color.WHITE, 'soft')
-                    self.light_layer.add(self.light)
 
     def on_key_press(self, symbol: int, modifiers: int):
         if symbol == key.ESCAPE:
@@ -933,8 +934,23 @@ class GameView(View):
                 self.horizontal_enemies.append(enemy)
                 self.all_sprites.append(enemy)
 
+    def day(self, delta_time):
+        if self.to_night:
+            self.time -= 4 * delta_time
+        else:
+            self.time += 4 * delta_time
+        if self.time <= 1 and self.to_night:
+            self.to_night = False
+        elif self.time >= 244 and not self.to_night:
+            self.to_night = True
+        if self.time < 100 and self.light not in self.light_layer:
+            self.light_layer.add(self.light)
+        elif self.time >= 100 and self.light in self.light_layer:
+            self.light_layer.remove(self.light)
+
     def on_update(self, delta_time: float):
         global all_levels, count_coins, count_stars
+        self.day(delta_time)
         self.time_level += delta_time
         self.time_after_hit += delta_time
         self.coins.update()
@@ -980,7 +996,8 @@ class GameView(View):
         start_render()
         with self.light_layer:
             self.all_sprites.draw()
-        self.light_layer.draw(ambient_color=(10, 10, 10))
+        time = int(self.time) % 256
+        self.light_layer.draw(ambient_color=(time, time, time))
         draw_text(f"{self.text} {self.count_coin}",
                   start_x=25, start_y=SCREEN_HEIGHT - 40,
                   color=color.ORANGE, font_size=24)
