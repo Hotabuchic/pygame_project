@@ -1042,7 +1042,8 @@ class PauseView(View):
 
         with self.game_view.light_layer:
             self.game_view.all_sprites.draw()
-        self.game_view.light_layer.draw(ambient_color=(10, 10, 10))
+        time = int(self.game_view.time) % 256
+        self.game_view.light_layer.draw(ambient_color=(time, time, time))
         draw_text(f"{self.game_view.text} {self.game_view.count_coin}",
                   start_x=25, start_y=SCREEN_HEIGHT - 40,
                   color=color.ORANGE, font_size=24)
