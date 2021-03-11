@@ -1242,7 +1242,7 @@ class InstructionView(View):
                                         language,
                                         "russian = 'для прохождения которых"
                                         " нужно выйти из лабиринта.'")[0][0]
-        text = 'На один уровень у вас есть 3 "сердчека" - жизни.'
+        text = 'На один уровень у вас есть 3 "сердeчка" - жизни.'
         self.text_3 = database.get_data("dictionary",
                                         language,
                                         f"russian = '{text}'")[0][0]
