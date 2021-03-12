@@ -15,6 +15,7 @@ help_dict_for_stars = {"False": 0, "лёгкий": 1, "средний": 2, "сл
 
 
 def think_stars(data):
+    """Функция для подсчета звезд"""
     count = 0
     for i in data:
         count += help_dict_for_stars[i[0]]
@@ -34,6 +35,8 @@ all_person = database.get_data("persons")
 
 
 class MainMenuView(View):
+    """Главное меню игры"""
+
     def __init__(self):
         super(MainMenuView, self).__init__()
         self.background = None
@@ -47,6 +50,7 @@ class MainMenuView(View):
         self.btn_exit = EXIT_SOUND
 
     def on_mouse_motion(self, x: float, y: float, dx: float, dy: float):
+        """Отображение курсора"""
         self.cursor.center_x = x
         self.cursor.center_y = y
 
@@ -150,35 +154,41 @@ class MainMenuView(View):
         self.ui_manager.add_ui_element(btn_shop)
 
     def new_game(self):
+        """Функция открытия интерфейса сброса всех достежений"""
         self.btn.play()
         self.ui_manager.purge_ui_elements()
         view = NewGameView()
         self.window.show_view(view)
 
     def resume(self):
+        """Функция открытия интерфейса для выбора уровня"""
         self.btn.play()
         self.ui_manager.purge_ui_elements()
         view = LevelsMenuView()
         self.window.show_view(view)
 
     def end(self):
+        """Функция закрывающая окно и заканчивающая работу программы"""
         self.btn_exit.play(1.7)
         sleep(0.9)
         close_window()
 
     def settings(self):
+        """Функция открытия интерфейса настроек игры"""
         self.btn_settings.play()
         self.ui_manager.purge_ui_elements()
         view = SettingsView()
         self.window.show_view(view)
 
     def instruction(self):
+        """Функция открытия интерфейса “инструкци” к игре"""
         self.btn_settings.play()
         self.ui_manager.purge_ui_elements()
         view = InstructionView()
         self.window.show_view(view)
 
     def shop(self):
+        """Функция открытия интерфейса “магазина” персонажей"""
         self.btn.play()
         self.ui_manager.purge_ui_elements()
         view = ShopView()
@@ -205,6 +215,8 @@ class MainMenuView(View):
 
 
 class SettingsView(View):
+    """Интерфейс настроек"""
+
     def __init__(self):
         super(SettingsView, self).__init__()
         self.background = None
@@ -217,6 +229,7 @@ class SettingsView(View):
         self.btn_settings = SETTINGS_SOUND
 
     def on_mouse_motion(self, x: float, y: float, dx: float, dy: float):
+        """Отображение курсора"""
         self.cursor.center_x = x
         self.cursor.center_y = y
 
@@ -335,30 +348,35 @@ class SettingsView(View):
         self.ui_manager.add_ui_element(btn_english)
 
     def easy(self):
+        """Функция выбирающая уровень сложности как легкий"""
         global level
         self.btn.play()
         database.change_data("player_info", "current_level = 'лёгкий'")
         level = database.get_data("player_info", "current_level")[0][0]
 
     def medium(self):
+        """Функция выбирающая уровень сложности как средний"""
         global level
         self.btn.play()
         database.change_data("player_info", "current_level = 'средний'")
         level = database.get_data("player_info", "current_level")[0][0]
 
     def hard(self):
+        """Функция выбирающая уровень сложности как сложный"""
         global level
         self.btn.play()
         database.change_data("player_info", "current_level = 'сложный'")
         level = database.get_data("player_info", "current_level")[0][0]
 
     def settings(self):
+        """Функция для выхода из настроек в интерфейс главного меню"""
         self.btn_settings.play()
         self.ui_manager.purge_ui_elements()
         view = MainMenuView()
         self.window.show_view(view)
 
     def russia(self):
+        """Функция выбирающая язык как русский"""
         global language
         self.btn.play()
         database.change_data("player_info", "language = 'russian'")
@@ -366,6 +384,7 @@ class SettingsView(View):
         self.setup()
 
     def english(self):
+        """Функция выбирающая язык как английский"""
         global language
         self.btn.play()
         database.change_data("player_info", "language = 'english'")
@@ -408,6 +427,8 @@ class SettingsView(View):
 
 
 class NewGameView(View):
+    """Интерфейс сброса всех достижений"""
+
     def __init__(self):
         super(NewGameView, self).__init__()
         self.background = None
@@ -418,6 +439,7 @@ class NewGameView(View):
         self.btn_2 = GAMEOVER_SOUND
 
     def on_mouse_motion(self, x: float, y: float, dx: float, dy: float):
+        """Отображение курсора"""
         self.cursor.center_x = x
         self.cursor.center_y = y
 
@@ -476,6 +498,7 @@ class NewGameView(View):
         self.ui_manager.add_ui_element(btn_cancel)
 
     def ok(self):
+        """Выставление в базе данных стартовых значений по умолчанию"""
         global count_coins, count_stars, all_levels, all_person, player
         self.btn_2.play(1.25)
         database.change_data("levels", "completed = 'False',"
@@ -493,6 +516,7 @@ class NewGameView(View):
         self.cancel()
 
     def cancel(self):
+        """Функция отмены сброса"""
         self.btn.play()
         self.ui_manager.purge_ui_elements()
         view = MainMenuView()
@@ -519,6 +543,7 @@ class NewGameView(View):
 
 
 class LevelsMenuView(View):
+    """Интерфейс для выбора уровня"""
     def __init__(self, num_level=0):
         super(LevelsMenuView, self).__init__()
         self.background = None
@@ -538,6 +563,7 @@ class LevelsMenuView(View):
                                       "russian = 'Время прохождения -'")[0][0]
 
     def on_mouse_motion(self, x: float, y: float, dx: float, dy: float):
+        """Отображение курсора"""
         self.cursor.center_x = x
         self.cursor.center_y = y
 
@@ -587,6 +613,7 @@ class LevelsMenuView(View):
         self.ui_manager.add_ui_element(btn_play)
 
     def set_star(self):
+        """Функция выставления звезд уровню"""
         self.time = all_levels[self.num_level][7]
         completed = all_levels[self.num_level][3]
         self.first_star = Sprite(STAR2_IMAGE, center_x=300, center_y=230)
@@ -609,18 +636,21 @@ class LevelsMenuView(View):
                                      center_x=500, center_y=230)
 
     def play(self):
+        """Функция запуска интерфейса игрового процесса"""
         self.btn_play.play(1.2)
         self.ui_manager.purge_ui_elements()
         view = GameView(all_levels[self.num_level])
         self.window.show_view(view)
 
     def exit(self):
+        """Функция выхода из меню выбора уровня в главное меню"""
         self.back.play()
         self.ui_manager.purge_ui_elements()
         view = MainMenuView()
         self.window.show_view(view)
 
     def left(self):
+        """Перелистывает на соседний левый уровень"""
         self.btn.play()
         if self.num_level == 0:
             self.num_level = len(all_levels) - 1
@@ -629,6 +659,7 @@ class LevelsMenuView(View):
         self.set_star()
 
     def right(self):
+        """Перелистывает на соседний правый уровень"""
         self.btn.play()
         if self.num_level == len(all_levels) - 1:
             self.num_level = 0
@@ -694,6 +725,7 @@ class LevelsMenuView(View):
 
 
 def load_level(filename):
+    """Функция для загрузки уровня"""
     filename = "levels/" + filename
     # читаем уровень, убирая символы перевода строки
     with open(filename, 'r') as mapFile:
@@ -707,6 +739,7 @@ def load_level(filename):
 
 
 class GameView(View):
+    """Класс реализующий работу самого уровня и игрового процесса"""
     def __init__(self, data_level):
         super(GameView, self).__init__()
         self.data_level = data_level
@@ -837,6 +870,7 @@ class GameView(View):
                                        150, color.WHITE, 'soft')
 
     def on_key_press(self, symbol: int, modifiers: int):
+        """Обработка движений игрока"""
         if symbol == key.ESCAPE:
             view = PauseView(self, self.data_level)
             self.window.show_view(view)
@@ -870,11 +904,13 @@ class GameView(View):
         sleep(0.03)
 
     def to_sec(self, time):
+        """Функция для перевода секунд в красивый формат отображения времени - мм:сс:мсмс"""
         time = list(map(int, time.split(":")))
         new_time = time[0] * 60 + time[1] + time[2] / 100
         return new_time
 
     def win(self):
+        """Функция изменения данных при победе игрока"""
         global count_coins, all_levels, count_stars
         if help_dict_for_stars[level] >= \
                 help_dict_for_stars[self.completed]:
@@ -886,17 +922,22 @@ class GameView(View):
                 for i in self.get_coin:
                     self.level_coins[i - 1] = "-"
                 database.change_data("levels",
-                                     f"all_coins = '{''.join(self.level_coins)}'",
+                                     f"all_coins ="
+                                     f" '{''.join(self.level_coins)}'",
                                      data_criterion=f"id = {self.id}")
                 count_coins += x
-                database.change_data("player_info", f"count_coins = {count_coins}")
-        time_old = database.get_data("levels", "time", data_criterion=f"id = {self.id}")[0][0]
+                database.change_data("player_info",
+                                     f"count_coins = {count_coins}")
+        time_old = database.get_data("levels", "time",
+                                     data_criterion=f"id = {self.id}")[0][0]
         millis = str(round(self.time_level % 1, 2))[2:]
         if time_old == "False" \
-                or self.to_sec(f"{int(self.time_level // 60)}:{floor(self.time_level % 60)}:{millis}") \
+                or self.to_sec(f"{int(self.time_level // 60)}:"
+                               f"{floor(self.time_level % 60)}:{millis}") \
                 < self.to_sec(time_old):
             database.change_data("levels",
-                                 f"time = '{int(self.time_level // 60)}:{floor(self.time_level % 60)}:{millis}'",
+                                 f"time = '{int(self.time_level // 60)}:"
+                                 f"{floor(self.time_level % 60)}:{millis}'",
                                  data_criterion=f"id = {self.id}")
         all_levels = database.get_data("levels")
         count_stars = think_stars(database.get_data("levels", "completed"))
@@ -907,6 +948,7 @@ class GameView(View):
         self.window.show_view(view)
 
     def check_enemy(self):
+        """Функция проверяющая столкновения противников со стенами"""
         for enemy in self.vertical_enemies:
             if enemy.collides_with_list(self.walls) \
                     or enemy.bottom < 0 \
@@ -935,6 +977,7 @@ class GameView(View):
                 self.all_sprites.append(enemy)
 
     def day(self, delta_time):
+        """Функция смены дня и ночи"""
         if self.to_night:
             self.time -= 4 * delta_time
         else:
@@ -1010,6 +1053,7 @@ class GameView(View):
 
 
 class PauseView(View):
+    """Класс реализующий остановку уровня на “паузу”"""
     def __init__(self, game_view, data_level):
         super().__init__()
         self.game_view = game_view
@@ -1081,6 +1125,7 @@ class PauseView(View):
 
 
 class GameEndView(View):
+    """Интерфейс уведомляющий о проигрыше"""
     def __init__(self, game_view, data_level):
         super().__init__()
         self.game_view = game_view
@@ -1134,6 +1179,7 @@ class GameEndView(View):
 
 
 class GameWinView(View):
+    """Интерфейс уведомляющий о выигрыше"""
     def __init__(self, game_view, data_level):
         super().__init__()
         self.game_view = game_view
@@ -1225,6 +1271,7 @@ class GameWinView(View):
 
 
 class InstructionView(View):
+    """Интерфейс “инструкция” к игре"""
     def __init__(self):
         super(InstructionView, self).__init__()
         self.background = None
@@ -1284,12 +1331,14 @@ class InstructionView(View):
         self.ui_manager.add_ui_element(btn_instruction)
 
     def instruction(self):
+        """Функция выхода из инструкции в главное меню"""
         self.btn_instruction.play()
         self.ui_manager.purge_ui_elements()
         view = MainMenuView()
         self.window.show_view(view)
 
     def on_mouse_motion(self, x: float, y: float, dx: float, dy: float):
+        """Отображение курсора"""
         self.cursor.center_x = x
         self.cursor.center_y = y
 
@@ -1340,6 +1389,7 @@ class InstructionView(View):
 
 
 class ShopView(View):
+    """Интерфейс “магазин” персонажей"""
     def __init__(self):
         super(ShopView, self).__init__()
         self.background = None
@@ -1467,6 +1517,7 @@ class ShopView(View):
                 self.ui_manager.add_ui_element(btn_buy)
 
     def select(self):
+        """Функция выбора персонажа"""
         global player
         self.person.play()
         database.change_data("player_info",
@@ -1477,6 +1528,7 @@ class ShopView(View):
         self.setup()
 
     def buy(self):
+        """Функция покупки персонажа"""
         global count_coins, player, all_person
         if count_coins >= all_person[self.num_person][3]:
             self.person.play()
@@ -1498,12 +1550,14 @@ class ShopView(View):
             self.time_buy = 0
 
     def shop(self):
+        """Функция выхода из магазина в главное меню"""
         self.btn_shop.play()
         self.ui_manager.purge_ui_elements()
         view = MainMenuView()
         self.window.show_view(view)
 
     def left(self):
+        """Перелистывает на соседнего левого персонажа"""
         self.btn.play()
         if self.num_person == 0:
             self.num_person = len(all_person) - 1
@@ -1516,6 +1570,7 @@ class ShopView(View):
                                    center_y=SCREEN_HEIGHT // 2 + 50, scale=3)
 
     def right(self):
+        """Перелистывает на соседнего правого персонажа"""
         self.btn.play()
         if self.num_person == len(all_person) - 1:
             self.num_person = 0
@@ -1534,6 +1589,7 @@ class ShopView(View):
             self.right()
 
     def on_mouse_motion(self, x: float, y: float, dx: float, dy: float):
+        """Отображение курсора"""
         self.cursor.center_x = x
         self.cursor.center_y = y
 

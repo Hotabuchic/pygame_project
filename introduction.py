@@ -9,6 +9,7 @@ language = database.get_data("player_info", "language")[0][0]
 
 
 class IntroductionView(View):
+    """Вступительный интерфейс игры"""
     def __init__(self):
         super(IntroductionView, self).__init__()
         self.window.set_mouse_visible(False)
@@ -18,6 +19,7 @@ class IntroductionView(View):
         self.start_load.play(1.5)
 
     def on_mouse_motion(self, x: float, y: float, dx: float, dy: float):
+        """Отображение курсора"""
         self.cursor.center_x = x
         self.cursor.center_y = y
 
@@ -40,9 +42,11 @@ class IntroductionView(View):
         self.cursor.draw()
 
     def on_key_press(self, symbol: int, modifiers: int):
+        """Открытие меню игры по нажатию кнопки клавиатуры"""
         view = MainMenuView()
         self.window.show_view(view)
 
     def on_mouse_press(self, x: float, y: float, button: int, modifiers: int):
+        """Открытие меню игры по нажатию кнопки мыши"""
         view = MainMenuView()
         self.window.show_view(view)
